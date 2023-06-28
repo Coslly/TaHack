@@ -1,5 +1,5 @@
 # TaHack for game GTA5
-External menu for GTA5
+Simple external menu for GTA5
 
 Online Version: 1.67
 
