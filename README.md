@@ -4,6 +4,7 @@
 - Online Version: 1.67
 - GUI project: https://github.com/Coslly/EasyGUI-Lightweight.git
 - Build in Release | x86
+- C++
 # 😩It doesn't work!!!
 You need to modify the offset at the top of the Main.cpp file content.
 
