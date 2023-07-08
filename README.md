@@ -3,7 +3,7 @@
 - Saveable System
 - Online Version: 1.67
 - GUI project: https://github.com/Coslly/EasyGUI-Lightweight.git
-- Build in Release | x86
+- Build in Release | x64
 - C++
 # 😩It doesn't work!!!
 You need to modify the offset at the top of the Main.cpp file content.
