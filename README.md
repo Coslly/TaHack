@@ -12,5 +12,6 @@ The offset will change every game update.
 # 🤩Showcase
 ![image](https://github.com/Coslly/TaHack/blob/main/ShowImage1.png?raw=true)
 ![image](https://github.com/Coslly/TaHack/blob/main/ShowImage2.png?raw=true)
+![image](https://github.com/Coslly/TaHack/blob/main/ShowImage3.png?raw=true)
 # 💀Disclaimer
 I am not responsible for anything that happens when you use this software.
