@@ -1,7 +1,7 @@
 # TAHack for game Grand Theft Auto V
 - External Menu
 - Saveable System
-- Online Version: 1.67
+- Online Version: 1.68
 - GUI project: https://github.com/Coslly/EasyGUI-Lightweight.git
 - C++ Build in Release | x64
 - Not detected by anti-cheat
