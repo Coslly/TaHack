@@ -1,6 +1,6 @@
 ﻿#include "Head.h"
-const int ReleaseVersion = 89;
-const string ReleaseDate = "[2024-03-01 11:50]";
+const int ReleaseVersion = 88;
+const string ReleaseDate = "[2024-03-01 12:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -152,7 +152,7 @@ void Thread_Menu() noexcept
 				const auto Block_About = GUI_BL_.GUI_Block(150, 30, 160, "About");
 				GUI_BL_.GUI_Text(Block_About, 1, "TAHack", GUI_BL_.Global_Get_EasyGUI_Color());
 				GUI_BL_.GUI_Text(Block_About, 1, "            for GTA5 (External)", { 150,150,150 });
-				GUI_BL_.GUI_Text(Block_About, 2, "Release date: " + ReleaseDate, { 150,150,150 });
+				GUI_BL_.GUI_Text(Block_About, 2, "Release date: " + ReleaseDate + " (" + to_string(ReleaseVersion) + ")", { 150,150,150 });
 				GUI_BL_.GUI_Text(Block_About, 3, "Online version: 1.68", { 150,150,150 });
 				GUI_BL_.GUI_Text(Block_About, 4, "Author: https://github.com/Coslly", { 150,150,150 });
 				BOOL Button_AuthorLink = false;
@@ -182,7 +182,7 @@ void Thread_Menu() noexcept
 			{
 				const auto Block_Hint = GUI_BL_.GUI_Block(150, 30, 150, "What is this?");
 				GUI_BL_.GUI_Text({ Block_Hint.x - 30,Block_Hint.y }, 1, "Made for your account security.", { 200,100,100 });
-				GUI_BL_.GUI_Text({ Block_Hint.x - 30,Block_Hint.y }, 2, "I can make sure this is 99.99% safe. You can rest assured.", { 200,100,100 });
+				GUI_BL_.GUI_Text({ Block_Hint.x - 30,Block_Hint.y }, 2, "I can make sure this is 99.9% safe. You can rest assured.", { 200,100,100 });
 				GUI_BL_.GUI_Text({ Block_Hint.x - 30,Block_Hint.y }, 3, "I use it all myself. XD", { 200,100,100 });
 				GUI_BL_.GUI_Text({ Block_Hint.x - 30,Block_Hint.y }, 4, "When you enable it, Menu funtion will be disabled.");
 				const auto Block_Menu = GUI_BL_.GUI_Block(150, 200, 210, "Legit");
@@ -409,7 +409,7 @@ int main() noexcept
 	System::URL_READ AutoUpdate = { "cache_update" };//Auto Update Service
 	if (AutoUpdate.StoreMem("https://github.com/Coslly/TaHack/blob/main/TAHack/TAHack/Main.cpp?raw=true"))
 	{
-		auto Version = AutoUpdate.Read(2); Version.erase(0, 27); Version.erase(Version.size() - 1, 1);//Erase suffix and variablename
+		string Version = AutoUpdate.Read(2); if (Version != "") { Version.erase(0, 27); Version.erase(Version.size() - 1, 1); }//Erase suffix and variablename
 		AutoUpdate.Release();
 		if (Variable::string_int_(Version) > ReleaseVersion && Window::Message_Box("TaHack Update", "A new version has been released.\nDo you want to update now?\n", MB_YESNO | MB_ICONQUESTION) == 6)
 		{
