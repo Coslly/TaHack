@@ -1,5 +1,5 @@
 #include "Head.h"
-const float ReleaseVersion = 2.56;
+const float ReleaseVersion = 256;
 const string ReleaseDate = "[2024-03-01 12:00]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
