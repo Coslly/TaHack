@@ -1,6 +1,7 @@
 # TAHack for game Grand Theft Auto V
 - External Menu
 - Saveable System
+- Automatically detect updates
 - Online Version: 1.68
 - GUI project: https://github.com/Coslly/EasyGUI-Lightweight.git
 - C++ Build in Release | x64
