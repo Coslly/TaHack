@@ -1,6 +1,6 @@
 ﻿#include "Head.h"
-const int ReleaseVersion = 88;
-const string ReleaseDate = "[2024-03-01 12:30]";
+const int ReleaseVersion = 90;
+const string ReleaseDate = "[2024-03-02 20:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -25,7 +25,7 @@ namespace TAHack_Config_Var
 	int UI_Menu_TeleportWaypoint_Key = Variable::string_int_(System::Get_File("TAHack.cfg", 14));
 	BOOL UI_Menu_Vehicle_God = Variable::string_int_(System::Get_File("TAHack.cfg", 15));
 	BOOL UI_Menu_Vehicle_Gravity = Variable::string_int_(System::Get_File("TAHack.cfg", 16));
-	float UI_Menu_Vehicle_Gravity_Value = Variable::string_float_(System::Get_File("TAHack.cfg", 17));
+	int UI_Menu_Vehicle_Gravity_Value = Variable::string_int_(System::Get_File("TAHack.cfg", 17));
 	BOOL UI_Menu_Time = Variable::string_int_(System::Get_File("TAHack.cfg", 18));
 	int UI_Menu_Time_Hour = Variable::string_int_(System::Get_File("TAHack.cfg", 19));
 	int UI_Menu_Time_Minute = Variable::string_int_(System::Get_File("TAHack.cfg", 20));
@@ -137,7 +137,7 @@ void Thread_Menu() noexcept
 				const auto Block_Vehicle = GUI_BL_.GUI_Block(580, 260, 150, "Vehicle");
 				GUI_BL_.GUI_Checkbox(Block_Vehicle, 1, "God", UI_Menu_Vehicle_God);
 				GUI_BL_.GUI_Checkbox(Block_Vehicle, 2, "Gravity", UI_Menu_Vehicle_Gravity);
-				GUI_BL_.GUI_Slider<float, class GTA_Menu_9>(Block_Vehicle, 3, "Value", 0, 100, UI_Menu_Vehicle_Gravity_Value);
+				GUI_BL_.GUI_Slider<int, class GTA_Menu_9>(Block_Vehicle, 3, "Value", 0, 100, UI_Menu_Vehicle_Gravity_Value);
 				GUI_BL_.GUI_Checkbox(Block_Vehicle, 4, "Anti gravity", UI_Menu_AntiGravity);
 				GUI_BL_.GUI_KeySelector<class GTA_Menu_10>(Block_Vehicle, 4, UI_Menu_AntiGravity_Key);
 				const auto Block_Weapon = GUI_BL_.GUI_Block(580, 430, 120, "Weapon");
@@ -187,14 +187,17 @@ void Thread_Menu() noexcept
 				GUI_BL_.GUI_Text({ Block_Hint.x - 30,Block_Hint.y }, 4, "When you enable it, Menu funtion will be disabled.");
 				const auto Block_Menu = GUI_BL_.GUI_Block(150, 200, 210, "Legit");
 				GUI_BL_.GUI_Checkbox(Block_Menu, 1, "Enabled", UI_Legit_Enabled, GUI_BL_.Global_Get_EasyGUI_Color());
-				GUI_BL_.GUI_Checkbox(Block_Menu, 2, "Health lock", UI_Legit_HealthLock);
-				GUI_BL_.GUI_Button_Small(Block_Menu, 2, UI_Legit_Suicide);
-				GUI_BL_.GUI_Checkbox(Block_Menu, 3, "Vehicle gravity", UI_Legit_VehicleGravity);
-				GUI_BL_.GUI_Slider<int, class GTA_Menu_14>(Block_Menu, 4, "Value", 0, 50, UI_Legit_VehicleGravity_Value);
-				GUI_BL_.GUI_Checkbox(Block_Menu, 5, "Vehicle Anti gravity", UI_Legit_VehicleAntiGravity);
-				GUI_BL_.GUI_KeySelector<class GTA_Menu_15>(Block_Menu, 5, UI_Legit_VehicleAntiGravity_Key);
-				GUI_BL_.GUI_Checkbox(Block_Menu, 6, "Teleport waypoint", UI_Legit_TeleportWaypoint, { 150,100,150 });
-				GUI_BL_.GUI_KeySelector<class GTA_Menu_16>(Block_Menu, 6, UI_Legit_TeleportWaypoint_Key);
+				if (UI_Legit_Enabled)
+				{
+					GUI_BL_.GUI_Checkbox(Block_Menu, 2, "Health lock", UI_Legit_HealthLock);
+					GUI_BL_.GUI_Button_Small(Block_Menu, 2, UI_Legit_Suicide);
+					GUI_BL_.GUI_Checkbox(Block_Menu, 3, "Vehicle gravity", UI_Legit_VehicleGravity);
+					GUI_BL_.GUI_Slider<int, class GTA_Menu_14>(Block_Menu, 4, "Value", 0, 50, UI_Legit_VehicleGravity_Value);
+					GUI_BL_.GUI_Checkbox(Block_Menu, 5, "Vehicle Anti gravity", UI_Legit_VehicleAntiGravity);
+					GUI_BL_.GUI_KeySelector<class GTA_Menu_15>(Block_Menu, 5, UI_Legit_VehicleAntiGravity_Key);
+					GUI_BL_.GUI_Checkbox(Block_Menu, 6, "Teleport waypoint", UI_Legit_TeleportWaypoint, { 150,100,150 });
+					GUI_BL_.GUI_KeySelector<class GTA_Menu_16>(Block_Menu, 6, UI_Legit_TeleportWaypoint_Key);
+				}
 				WindowSize = { 580 ,440 };
 			}
 			GUI_BL_.Draw_GUI();
@@ -234,7 +237,7 @@ void Thread_Memory() noexcept
 				}
 				else GTA_mem.Write_Level<float>(LocalPlayer, { 0x30,0x10,0x20,0x70,0x0,0x2c }, 0.25);
 				if (UI_Menu_OneHitKill && (System::Get_Key(VK_LBUTTON) || System::Get_Key(VK_RBUTTON)))GTA_mem.Write_Level<float>(LocalPlayer, { pCPedWeaponManager,pCWeaponInfo,oDamage }, 999999);//子弹一击毙命
-				else GTA_mem.Write_Level<float>(LocalPlayer, { pCPedWeaponManager,pCWeaponInfo,oDamage }, 30);
+				else GTA_mem.Write_Level<float>(LocalPlayer, { pCPedWeaponManager,pCWeaponInfo,oDamage }, 50);
 				if (UI_Menu_Suicide)GTA_mem.Write_Level<float>(LocalPlayer, { oHealth }, 0);//修改生命值实现自杀
 				if (UI_Menu_TeleportWaypoint && System::Get_Key_Onest(UI_Menu_TeleportWaypoint_Key) && GTA_mem.Read<float>(GTA_EXE_Modl + oWayPoint) != 64000)//传送导航点
 				{
@@ -249,7 +252,7 @@ void Thread_Memory() noexcept
 						GTA_mem.Write_Level<float>(LocalPlayer, { pCNavigation,oPositionY }, GTA_mem.Read<float>(GTA_EXE_Modl + oWayPoint + 4));
 						GTA_mem.Write_Level<float>(LocalPlayer, { pCNavigation,oPositionZ }, -255);
 					}
-					Beep(100, 50);
+					Beep(100, 30);
 				}
 				if (UI_Menu_Vehicle_God)GTA_mem.Write_Level<int>(LocalPlayer, { pCVehicle,oGod }, 1);//载具无敌
 				else GTA_mem.Write_Level<int>(LocalPlayer, { pCVehicle,oGod }, 0);
@@ -282,7 +285,7 @@ void Thread_Memory() noexcept
 				else if (UI_Legit_VehicleGravity)GTA_mem.Write_Level<float>(LocalPlayer, { pCVehicle,oVGravity }, UI_Legit_VehicleGravity_Value);
 				else GTA_mem.Write_Level<float>(LocalPlayer, { pCVehicle,oVGravity }, 9.8);
 				if (System::Get_Key(VK_LBUTTON) || System::Get_Key(VK_RBUTTON))GTA_mem.Write_Level<float>(LocalPlayer, { pCPedWeaponManager,pCWeaponInfo,oDamage }, 999999);//子弹一击毙命
-				else GTA_mem.Write_Level<float>(LocalPlayer, { pCPedWeaponManager,pCWeaponInfo,oDamage }, 30);
+				else GTA_mem.Write_Level<float>(LocalPlayer, { pCPedWeaponManager,pCWeaponInfo,oDamage }, 50);
 				if (UI_Legit_TeleportWaypoint && System::Get_Key_Onest(UI_Legit_TeleportWaypoint_Key) && GTA_mem.Read<float>(GTA_EXE_Modl + oWayPoint) != 64000)//传送导航点
 				{
 					if (GTA_mem.Read_Level<BOOL>(LocalPlayer, { 0xE32 }))//当人物在载具内
@@ -296,7 +299,7 @@ void Thread_Memory() noexcept
 						GTA_mem.Write_Level<float>(LocalPlayer, { pCNavigation,oPositionY }, GTA_mem.Read<float>(GTA_EXE_Modl + oWayPoint + 4));
 						GTA_mem.Write_Level<float>(LocalPlayer, { pCNavigation,oPositionZ }, -255);
 					}
-					Beep(100, 50);
+					Beep(100, 30);
 				}
 			}
 		}
@@ -312,12 +315,13 @@ void Thread_Misc() noexcept
 	Window::Render Render_Var; Render_Var.CreatePaint(Render_Window_HWND_, 0, 0, GetSystemMetrics(SM_CXSCREEN), 30);
 	while (1)
 	{
-		if (System::Sleep_Tick<class GTA5_Address_Update_Sleep_Class_>(3500))//Reload Offsets
+		if (System::Sleep_Tick<class GTA5_Address_Update_Sleep_Class_>(4000))//Reload Offsets
 		{
 			GTA_mem = { "GTA5.exe" };
 			GTA_HWND = GTA_mem.Get_ProcessHWND();
 			GTA_EXE_Modl = GTA_mem.Get_Module("GTA5.exe");
 			WorldPTR = GTA_mem.Read<uintptr_t>(GTA_EXE_Modl + oWorldPTR); LocalPlayer = WorldPTR + pCPed;
+			if (UI_Menu_AntiAFK && Window::Get_WindowEnable(GTA_mem.Get_ProcessHWND())) { System::Mouse_Move(1, 0); Sleep(1); System::Mouse_Move(-1, 0); Sleep(1); }//Anti AFK Kick
 		}
 		if (UI_Settings_WaterMark)
 		{
@@ -411,17 +415,19 @@ int main() noexcept
 	{
 		string Version = AutoUpdate.Read(2); if (Version != "") { Version.erase(0, 27); Version.erase(Version.size() - 1, 1); }//Erase suffix and variablename
 		AutoUpdate.Release();
-		if (Variable::string_int_(Version) > ReleaseVersion && Window::Message_Box("TaHack Update", "A new version has been released.\nDo you want to update now?\n", MB_YESNO | MB_ICONQUESTION) == 6)
+		if (Variable::string_int_(Version) > ReleaseVersion && Window::Message_Box("TaHack Update", "A new version has been released.\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
 		{
-			System::DownloadToPath("https://github.com/Coslly/TaHack/releases/download/Release/TAHack.exe", System::Rand_String(10) + ".exe"); Beep(100, 100); exit(0);
+			const auto Updated_FileName = System::Rand_String(10) + ".exe";
+			System::DownloadToPath("https://github.com/Coslly/TaHack/releases/download/Release/TAHack.exe", Updated_FileName);
+			Beep(100, 30);
+			Window::Message_Box("TaHack Update", "The latest version has been updated.\nPlease delete the old version.\nDownloaded file name: " + Updated_FileName + "\n", MB_ICONASTERISK);
+			exit(0);
 		}
 	}
-	Sleep(200);//Fix RestartBug
 	if (FindWindow(NULL, L"TAHack ")) { MessageBox(NULL, L"Already running.", L"Error", MB_ICONERROR); exit(0); }//Prevent multiple openings
 	if (!System::Judge_File("TAHack.cfg")) { System::Create_File("TAHack.cfg", Default_Config); System::Self_Restart(); }//Create Default Config
 	thread Thread_Menu1 = thread(Thread_Menu);
 	thread Thread_Misc1 = thread(Thread_Misc);
-	Sleep(10);
 	thread Thread_Memory1 = thread(Thread_Memory);
 	while (1)
 	{
