@@ -1,6 +1,6 @@
 ﻿#include "Head.h"
-const int ReleaseVersion = 90;
-const string ReleaseDate = "[2024-03-02 20:30]";
+const int ReleaseVersion = 91;
+const string ReleaseDate = "[2024-03-03 14:50]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -321,7 +321,7 @@ void Thread_Misc() noexcept
 			GTA_HWND = GTA_mem.Get_ProcessHWND();
 			GTA_EXE_Modl = GTA_mem.Get_Module("GTA5.exe");
 			WorldPTR = GTA_mem.Read<uintptr_t>(GTA_EXE_Modl + oWorldPTR); LocalPlayer = WorldPTR + pCPed;
-			if (UI_Menu_AntiAFK && Window::Get_WindowEnable(GTA_mem.Get_ProcessHWND())) { System::Mouse_Move(1, 0); Sleep(1); System::Mouse_Move(-1, 0); Sleep(1); }//Anti AFK Kick
+			if (!UI_Legit_Enabled && UI_Menu_AntiAFK && Window::Get_WindowEnable(GTA_mem.Get_ProcessHWND())) { System::Mouse_Move(1, 0); Sleep(1); System::Mouse_Move(-1, 0); Sleep(1); }//Anti AFK Kick
 		}
 		if (UI_Settings_WaterMark)
 		{
