@@ -1,14 +1,14 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 94;
-const string ReleaseDate = "[2024-03-10 20:10]";
+const int ReleaseVersion = 96;
+const string ReleaseDate = "[2024-03-11 17:40]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
 //--------------------------------------------------------------------
 namespace TAHack_Config_Var
 {
-	const string Default_Config = "0\n1000\n0\n1000\n0\n0\n1\n1.5\n1\n1\n1\n1\n1\n116\n1\n1\n25\n1\n11\n0\n45\n255\n230\n255\n250\n9\n1\n5\n1\n66\n0\n1\n1\n1\n25\n1\n5\n1\n1\n0\n1\n116\n1\n0\n1\n";
+	const string Default_Config = "0\n1000\n0\n1000\n0\n0\n1\n1.5\n1\n1\n1\n1\n1\n116\n1\n1\n25\n1\n11\n0\n45\n255\n230\n255\n250\n9\n1\n5\n1\n70\n0\n1\n1\n1\n25\n1\n5\n1\n1\n0\n1\n116\n1\n0\n1\n";
 	BOOL UI_Menu_Health = Variable::string_int_(System::Get_File("TAHack.cfg", 1));
 	int UI_Menu_Health_Value = Variable::string_int_(System::Get_File("TAHack.cfg", 2));
 	BOOL UI_Menu_Armor = Variable::string_int_(System::Get_File("TAHack.cfg", 3));
@@ -302,7 +302,7 @@ void Thread_Misc() noexcept
 {
 	System::Log("Load Thread: Thread_Misc()");
 	Window::Windows RenderWindow_Var;
-	const HWND Render_Window_HWND_ = RenderWindow_Var.Create_RenderBlock_Alpha(GetSystemMetrics(SM_CXSCREEN), 30, "TAHack Render");//Create RenderWindow
+	const HWND Render_Window_HWND_ = RenderWindow_Var.Create_RenderBlock_Alpha(GetSystemMetrics(SM_CXSCREEN), 30, "TAHack Render ");//Create RenderWindow
 	Window::Render Render_Var; Render_Var.CreatePaint(Render_Window_HWND_, 0, 0, GetSystemMetrics(SM_CXSCREEN), 30);
 	while (1)
 	{

@@ -29,8 +29,6 @@ namespace GTA5_SDK//GTA5作弊开发助手
 		const auto oVGravity = 0xC8C;
 		const auto oImpactType = 0x20;
 		const auto oImpactExplosion = 0x24;
-		const auto oSessionSwitchType = 1575032;
-		const auto oSessionSwitchState = 1574589;
 	}
 	using namespace GTA5_Offsets;
 	namespace Base//基础内存
@@ -41,7 +39,7 @@ namespace GTA5_SDK//GTA5作弊开发助手
 			const auto GlobalAddress = GTA_mem.Read<uintptr_t>(Module_GTA5 + oGlobalPTR + (8 * (Index >> 0x12 & 0x3F))) + (8 * (Index & 0x3FFFF));
 			GTA_mem.Write<Global_CLASS>(GlobalAddress, Value);
 		}
-		//---------------------------------------------------------------------------------------------------
+		//-------------------------------------------------------------------------------------------------------------------------------------------
 		float Health(BOOL Set = false, float SetValue = 0) noexcept//生命值
 		{
 			if (Set)GTA_mem.Write_Level<float>(LocalPlayer, { oHealth }, SetValue);
@@ -135,21 +133,23 @@ namespace GTA5_SDK//GTA5作弊开发助手
 			if (Set)GTA_mem.Write<Variable::Vector2>(Module_GTA5 + TimeADDR, SetValue);
 			return GTA_mem.Read<Variable::Vector2>(Module_GTA5 + TimeADDR);
 		}
-		void LoadSession(int SessionID = 0) noexcept//切换战局
+		void LoadSession(int SessionID = 0) noexcept//加载战局
 		{
-			///  0, 公共战局
-			///  1, 创建公共战局
-			///  2, 私人帮会战局
-			///  3, 帮会战局
-			///  6, 私人好友战局
-			///  9, 加入好友
-			/// 10, 单人战局
-			/// 11, 仅限邀请战局
-			/// 12, 加入帮会伙伴
-			Set_GlobalValue<int>(oSessionSwitchType, SessionID);
-			Set_GlobalValue<int>(oSessionSwitchState, 1);
+			//0  公共战局
+			//1  创建公共战局
+			//2  私人帮会战局
+			//3  帮会战局
+			//6  私人好友战局
+			//9  加入好友
+			//10 单人战局
+			//11 仅限邀请战局
+			//12 加入帮会伙伴
+			const auto SessionSwitchType = 1575032;
+			const auto SessionSwitchState = 1574589;
+			Set_GlobalValue<int>(SessionSwitchType, SessionID);
+			Set_GlobalValue<int>(SessionSwitchState, 1);
 			Sleep(200);
-			Set_GlobalValue<int>(oSessionSwitchState, 0);
+			Set_GlobalValue<int>(SessionSwitchState, 0);
 		}
 	}
 	using namespace Base;
