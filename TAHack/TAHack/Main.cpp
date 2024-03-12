@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 96;
-const string ReleaseDate = "[2024-03-11 17:40]";
+const int ReleaseVersion = 97;
+const string ReleaseDate = "[2024-03-12 21:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -71,7 +71,7 @@ void Thread_Menu() noexcept
 	while (1)
 	{
 		static int UI_Panel = 0; static vector<int> WindowSize = { 0 ,0 }; if (!MenuShowState)WindowSize = { 0 ,0 };
-		GUI_BL_.Window_SetSize({ (int)Variable::Animation<class GTAMEnu_Animation_1>(WindowSize[0], 2.5),(int)Variable::Animation<class GTAMEnu_Animation_2>(WindowSize[1], 2.5) });//Animation
+		GUI_BL_.Window_SetSize({ (int)Variable::Animation<class GTAMEnu_Animation_1>(WindowSize[0], 2),(int)Variable::Animation<class GTAMEnu_Animation_2>(WindowSize[1], 2) });//Animation
 		if (!GUI_BL_.Window_Move() && MenuShowState)
 		{
 			if (UI_Settings_CustomMenuColor)GUI_BL_.GUI_BackGround(1369);
