@@ -1,4 +1,4 @@
-﻿//2024-03-13 16:30
+﻿//2024-03-13 17:20
 #pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -1807,7 +1807,7 @@ namespace System//Windows系统
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
 }
-namespace EasyGUI//EasyGUI Release[2024-03-12 21:30]
+namespace EasyGUI//EasyGUI Release[2024-03-13 17:20]
 {
     /* Simple example
     int main()
@@ -2054,6 +2054,7 @@ namespace EasyGUI//EasyGUI Release[2024-03-12 21:30]
             DeleteObject(FontPen);
             delete[] wide_text;
         }
+        //---------------------------------------------------------------------
         void In_DrawString_Simple(int X, int Y, string String, Vector4 TextColor = { 255,255,255 }) noexcept//绘制简单文字 (方便制作GUI)
         {
             const HDC StringHdc = EasyGUI_DrawHDC;
@@ -2239,6 +2240,15 @@ namespace EasyGUI//EasyGUI Release[2024-03-12 21:30]
                 else if (Limit.y < ReturnValue)ReturnValue = Limit.y;
             }
             return ReturnValue;
+        }
+        //---------------------------------------------------------------------
+        template<class A>//防止同函数同步
+        BOOL In_TickSleep(int Time_MS) noexcept//不受线程影响的Sleep函数
+        {
+            const long Tick = GetTickCount64();
+            static long OldTick = Tick;
+            if (Tick - OldTick >= Time_MS) { OldTick = Tick; return true; }//当达到一定数值返回并且重写变量
+            else return false;
         }
         //---------------------------------------------------------------------
     public:
@@ -2455,8 +2465,8 @@ namespace EasyGUI//EasyGUI Release[2024-03-12 21:30]
                 else if (防止脱离 && GetAsyncKeyState(VK_LBUTTON))
                 {
                     MoveWindow(EasyGUI_WindowHWND, EasyGUI_MousePos.x - OldX, EasyGUI_MousePos.y - OldY, EasyGUI_WindowPos.right - EasyGUI_WindowPos.left, EasyGUI_WindowPos.bottom - EasyGUI_WindowPos.top, TRUE);//移动窗口到鼠标坐标
-                    this_thread::sleep_for(chrono::nanoseconds(20));//降低CPU占用 纳秒单位等待函数
                     Mouse_Block_ = true;
+                    if (In_TickSleep<class CLASS_EasyGUI_WindowMove_Stop_FPS>(200))return false;//定时返回false (用来刷新面板)
                     return true;
                 }
                 else {
@@ -2934,7 +2944,11 @@ namespace EasyGUI//EasyGUI Release[2024-03-12 21:30]
                 }
                 else {
                     In_DrawString(BlockPos.x + 65 + 1, BlockPos.y + StartLineRow * 30 + i * 25 - 1 + 1, LineString[i], { 0,0,0 }, Global_EasyGUIFont, Global_EasyGUIFontSize);
-                    if (DetectMousePos)In_DrawString(BlockPos.x + 65, BlockPos.y + StartLineRow * 30 + i * 25 - 1, LineString[i], { 255,255,255 }, Global_EasyGUIFont, Global_EasyGUIFontSize);
+                    if (DetectMousePos)//当光标选择时视觉反馈 (在上方时)
+                    {
+                        In_DrawGradientRect(BlockPos.x + 54, BlockPos.y + StartLineRow * 30 + i * 25 - 5, 232, 20, Global_EasyGUIColor / 6, { 15,15,15 });
+                        In_DrawString(BlockPos.x + 65, BlockPos.y + StartLineRow * 30 + i * 25 - 1, LineString[i], { 255,255,255 }, Global_EasyGUIFont, Global_EasyGUIFontSize);
+                    }
                     else In_DrawString(BlockPos.x + 65, BlockPos.y + StartLineRow * 30 + i * 25 - 1, LineString[i], { 200,200,200 }, Global_EasyGUIFont, Global_EasyGUIFontSize);
                 }
             }
