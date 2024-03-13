@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 97;
-const string ReleaseDate = "[2024-03-12 21:30]";
+const int ReleaseVersion = 98;
+const string ReleaseDate = "[2024-03-13 16:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -346,12 +346,10 @@ int main() noexcept
 	{
 		string Version = AutoUpdate.Read(3); if (Version != "") { Version.erase(0, 27); Version.erase(Version.size() - 1, 1); }//Erase suffix and variablename
 		AutoUpdate.Release();
-		if (Variable::string_int_(Version) > ReleaseVersion && Window::Message_Box("TaHack Update", "A new version has been released.\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
+		if (Variable::string_int_(Version) > ReleaseVersion && Window::Message_Box("TAHack Update", "A new version has been released.\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
 		{
-			const auto Updated_FileName = System::Rand_String(10) + ".exe";
-			System::DownloadToPath("https://github.com/Coslly/TaHack/releases/download/Release/TAHack.exe", Updated_FileName);
+			System::Open_Website("https://github.com/Coslly/TaHack/releases/download/Release/TAHack.exe");
 			Beep(100, 30);
-			Window::Message_Box("TaHack Update", "The latest version has been updated.\nPlease delete the old version.\nDownloaded file name: " + Updated_FileName + "\n", MB_ICONASTERISK);
 			exit(0);
 		}
 	}

@@ -1,4 +1,4 @@
-﻿//2024-03-12 21:30
+﻿//2024-03-13 16:30
 #pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -1456,7 +1456,7 @@ namespace System//Windows系统
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
-    void DownloadToPath(string Str_URL, string Str_DownloadPath) noexcept//下载文件到目录 当返回true则下载成功  下载到盘(无路径)需要管理员身份执行程序
+    void DownloadToPath(string Str_URL, string Str_DownloadPath) noexcept//下载文件到目录 当返回true则下载成功 如果要下载的文件大于300kb那么下载的几率会很低
     {//System::DownloadToPath("https://codeload.github.com/cazzwastaken/internal-bhop/zip/refs/heads/main", "C:\\TestFile.zip")
         byte Temp[1024]; ULONG Number = 1; FILE* stream; HINTERNET hSession = InternetOpen(L"RookIE/1.0", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
         if (hSession)
