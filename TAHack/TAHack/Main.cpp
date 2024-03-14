@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 99;
-const string ReleaseDate = "[2024-03-13 17:30]";
+const int ReleaseVersion = 100;
+const string ReleaseDate = "[2024-03-14 22:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -302,7 +302,7 @@ void Thread_Misc() noexcept
 {
 	System::Log("Load Thread: Thread_Misc()");
 	Window::Windows RenderWindow_Var;
-	const HWND Render_Window_HWND_ = RenderWindow_Var.Create_RenderBlock_Alpha(GetSystemMetrics(SM_CXSCREEN), 30, "TAHack Render ");//Create RenderWindow
+	const HWND Render_Window_HWND_ = RenderWindow_Var.Create_RenderBlock_Alpha(GetSystemMetrics(SM_CXSCREEN), 30, "TAHack - Watermark");//Create RenderWindow
 	Window::Render Render_Var; Render_Var.CreatePaint(Render_Window_HWND_, 0, 0, GetSystemMetrics(SM_CXSCREEN), 30);
 	while (1)
 	{
@@ -353,7 +353,7 @@ int main() noexcept
 			exit(0);
 		}
 	}
-	if (FindWindow(NULL, L"TAHack ")) { MessageBox(NULL, L"Already running.", L"Error", MB_ICONERROR); exit(0); }//Prevent multiple openings
+	if (FindWindow(NULL, L"TAHack ")) { MessageBox(NULL, L"Already running.", L"TAHack - Error", MB_ICONERROR); exit(0); }//Prevent multiple openings
 	if (!System::Judge_File("TAHack.cfg")) { System::Create_File("TAHack.cfg", Default_Config); System::Self_Restart(); }//Create Default Config
 	thread Thread_Menu1 = thread(Thread_Menu);
 	thread Thread_Misc1 = thread(Thread_Misc);
