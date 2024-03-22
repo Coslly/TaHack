@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 101;
-const string ReleaseDate = "[2024-03-16 12:50]";
+const int ReleaseVersion = 102;
+const string ReleaseDate = "[2024-03-22 21:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -26,7 +26,7 @@ namespace TAHack_Config_Var
 	int UI_Menu_TeleportWaypoint_Key = Variable::string_int_(System::Get_File("TAHack.cfg", 14));
 	BOOL UI_Menu_Vehicle_God = Variable::string_int_(System::Get_File("TAHack.cfg", 15));
 	BOOL UI_Menu_Vehicle_Gravity = Variable::string_int_(System::Get_File("TAHack.cfg", 16));
-	int UI_Menu_Vehicle_Gravity_Value = Variable::string_int_(System::Get_File("TAHack.cfg", 17));
+	float UI_Menu_Vehicle_Gravity_Value = Variable::string_float_(System::Get_File("TAHack.cfg", 17));
 	BOOL UI_Menu_Time = Variable::string_int_(System::Get_File("TAHack.cfg", 18));
 	int UI_Menu_Time_Hour = Variable::string_int_(System::Get_File("TAHack.cfg", 19));
 	int UI_Menu_Time_Minute = Variable::string_int_(System::Get_File("TAHack.cfg", 20));
@@ -47,7 +47,7 @@ namespace TAHack_Config_Var
 	BOOL UI_Legit_Enabled = Variable::string_int_(System::Get_File("TAHack.cfg", 32));
 	BOOL UI_Legit_HealthLock = Variable::string_int_(System::Get_File("TAHack.cfg", 33));
 	BOOL UI_Legit_VehicleGravity = Variable::string_int_(System::Get_File("TAHack.cfg", 34));
-	int UI_Legit_VehicleGravity_Value = Variable::string_int_(System::Get_File("TAHack.cfg", 35));
+	float UI_Legit_VehicleGravity_Value = Variable::string_float_(System::Get_File("TAHack.cfg", 35));
 	BOOL UI_Legit_VehicleAntiGravity = Variable::string_int_(System::Get_File("TAHack.cfg", 36));
 	int UI_Legit_VehicleAntiGravity_Key = Variable::string_int_(System::Get_File("TAHack.cfg", 37));
 	BOOL UI_Menu_NeverWanted = Variable::string_int_(System::Get_File("TAHack.cfg", 38));
@@ -109,7 +109,7 @@ void Thread_Menu() noexcept
 				const auto Block_Vehicle = GUI_BL_.GUI_Block(580, 260, 150, "Vehicle");
 				GUI_BL_.GUI_Checkbox(Block_Vehicle, 1, "God", UI_Menu_Vehicle_God);
 				GUI_BL_.GUI_Checkbox(Block_Vehicle, 2, "Gravity", UI_Menu_Vehicle_Gravity);
-				GUI_BL_.GUI_Slider<int, class GTA_Menu_9>(Block_Vehicle, 3, "Value", 0, 100, UI_Menu_Vehicle_Gravity_Value);
+				GUI_BL_.GUI_Slider<float, class GTA_Menu_9>(Block_Vehicle, 3, "Value", 0, 300, UI_Menu_Vehicle_Gravity_Value);
 				GUI_BL_.GUI_Checkbox(Block_Vehicle, 4, "Anti gravity", UI_Menu_AntiGravity);
 				GUI_BL_.GUI_KeySelector<class GTA_Menu_10>(Block_Vehicle, 4, UI_Menu_AntiGravity_Key);
 				const auto Block_Weapon = GUI_BL_.GUI_Block(580, 430, 120, "Weapon");
@@ -164,7 +164,7 @@ void Thread_Menu() noexcept
 					GUI_BL_.GUI_Checkbox(Block_Menu, 2, "Health lock", UI_Legit_HealthLock);
 					GUI_BL_.GUI_Button_Small(Block_Menu, 2, UI_Legit_Suicide);
 					GUI_BL_.GUI_Checkbox(Block_Menu, 3, "Vehicle gravity", UI_Legit_VehicleGravity);
-					GUI_BL_.GUI_Slider<int, class GTA_Menu_14>(Block_Menu, 4, "Value", 0, 50, UI_Legit_VehicleGravity_Value);
+					GUI_BL_.GUI_Slider<float, class GTA_Menu_14>(Block_Menu, 4, "Value", 0, 50, UI_Legit_VehicleGravity_Value);
 					GUI_BL_.GUI_Checkbox(Block_Menu, 5, "Vehicle Anti gravity", UI_Legit_VehicleAntiGravity);
 					GUI_BL_.GUI_KeySelector<class GTA_Menu_15>(Block_Menu, 5, UI_Legit_VehicleAntiGravity_Key);
 					GUI_BL_.GUI_Checkbox(Block_Menu, 6, "Teleport waypoint", UI_Legit_TeleportWaypoint, { 150,100,150 });

@@ -1,4 +1,4 @@
-﻿//2024-03-16 12:00
+﻿//2024-03-22 21:30﻿
 #pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -248,7 +248,7 @@ namespace Variable//变量转换
     //-----------------------------------------------------------------------------------------------------------------------------
     string Hex_String(uintptr_t Value) noexcept//10进制整数转换16进制字符转
     {//Variable::Hex_String(16); //return 0x10
-        char Hex_str[256];
+        char Hex_str[1024];
         sprintf(Hex_str, "0x%X", Value);
         return Hex_str;
     }
@@ -1205,6 +1205,12 @@ namespace System//Windows系统
 {
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
+    ULONGLONG Tick() noexcept//本地系统滴答值
+    {//System::Tick();
+        return GetTickCount64();
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------
     Variable::Vector4 RainbowColor(int Speed, const int Follo = 0) noexcept//彩虹色值
     {//System::RainbowColor(100);//颜色变换速度 (越大越慢)
         return { (int)floor(sin((float)GetTickCount64() / (Speed * 100) * 2 + Follo) * 127 + 128), (int)floor(sin((float)GetTickCount64() / (Speed * 100) * 2 + 2 + Follo) * 127 + 128), (int)floor(sin((float)GetTickCount64() / (Speed * 100) * 2 + 4 + Follo) * 127 + 128),255 };
@@ -1827,6 +1833,46 @@ namespace System//Windows系统
     //-----------------------------------------------------------------------------------------------------------------------------
     template<class CLASS>CLASS In_G(const uintptr_t Address) noexcept { return *reinterpret_cast<CLASS*>(Address); }//内部内存地址获取
     template<class CLASS>void In_S(const uintptr_t Address, CLASS Value) noexcept { *reinterpret_cast<CLASS*>(Address) = Value; }//内部内存地址调用
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------
+    template<class ValueClass, class CreateClassName>
+    BOOL Get_ValueChangeState(ValueClass Value) noexcept//检测值是否变化
+    {//System::Get_ValueChangeState<int, class CLASS_Funtion_Test>(Variable);
+        static auto Old_Value = Value;
+        if (Old_Value != Value) { Old_Value = Value; return true; }
+        else return false;
+    }
+    template<class ValueClass, class CreateClassName>
+    BOOL Get_ValueBigger(ValueClass Value) noexcept//检测值是否变化 (变大)
+    {//System::Get_ValueBigger<int, class CLASS_Funtion_Test>(Variable);
+        static auto Old_Value = Value;
+        if (Old_Value < Value) { Old_Value = Value; return true; }
+        else if (Old_Value != Value)Old_Value = Value;
+        return false;
+    }
+    template<class ValueClass, class CreateClassName>
+    BOOL Get_ValueSmaller(ValueClass Value) noexcept//检测值是否变化 (变小)
+    {//System::Get_ValueSmaller<int, class CLASS_Funtion_Test>(Variable);
+        static auto Old_Value = Value;
+        if (Old_Value > Value) { Old_Value = Value; return true; }
+        else if (Old_Value != Value)Old_Value = Value;
+        return false;
+    }
+    template<class ValueClass, class CreateClassName>
+    BOOL Get_ValueChangeState_t(ValueClass Value, ValueClass threshold) noexcept//检测值是否变化 (附加检测变化的量 阈值)
+    {//System::Get_ValueChangeState_t<int, class CLASS_Funtion_Test>(Variable, 10);
+        static auto Old_Value = Value;
+        if (Old_Value >= Value + threshold || Old_Value <= Value - threshold) { Old_Value = Value; return true; }
+        else return false;
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------
+    BOOL Is_MousePos_InMid(HWND Window_Hwnd = 0)//检测光标是否在窗口最中间
+    {//System::Is_MousePos_InMid();
+        RECT Window_Pos; POINT Mouse_Pos;
+        GetWindowRect(Window_Hwnd, &Window_Pos); GetCursorPos(&Mouse_Pos);
+        return (Mouse_Pos.x == Window_Pos.left + (Window_Pos.right - Window_Pos.left) / 2 && Mouse_Pos.y == Window_Pos.top + (Window_Pos.bottom - Window_Pos.top) / 2);
+    }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
 }
