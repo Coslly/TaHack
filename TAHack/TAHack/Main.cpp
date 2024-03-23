@@ -1,14 +1,14 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 102;
-const string ReleaseDate = "[2024-03-22 21:30]";
+const int ReleaseVersion = 104;
+const string ReleaseDate = "[2024-03-23 20:40]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
 //--------------------------------------------------------------------
 namespace TAHack_Config_Var
 {
-	const string Default_Config = "0\n1000\n0\n1000\n0\n0\n1\n1.5\n1\n1\n1\n1\n1\n116\n1\n1\n25\n1\n11\n0\n45\n255\n230\n255\n250\n9\n1\n5\n1\n70\n0\n1\n1\n1\n25\n1\n5\n1\n1\n0\n1\n116\n1\n0\n1\n";
+	const string Default_Config = "1\n300\n1\n300\n0\n0\n0\n1.5\n0\n0\n1\n1\n1\n116\n1\n1\n25\n0\n11\n0\n45\n255\n230\n255\n250\n6\n1\n5\n0\n70\n0\n0\n1\n1\n25\n1\n5\n0\n1\n0\n1\n116\n1\n0\n0\n1\n117\n";
 	BOOL UI_Menu_Health = Variable::string_int_(System::Get_File("TAHack.cfg", 1));
 	int UI_Menu_Health_Value = Variable::string_int_(System::Get_File("TAHack.cfg", 2));
 	BOOL UI_Menu_Armor = Variable::string_int_(System::Get_File("TAHack.cfg", 3));
@@ -61,13 +61,17 @@ namespace TAHack_Config_Var
 	BOOL UI_Menu_AntiAFK = Variable::string_int_(System::Get_File("TAHack.cfg", 45));
 	BOOL UI_Menu_PublicSession = false;
 	BOOL UI_Menu_InviteOnlySession = false;
+	BOOL UI_Menu_SpawnVehicle = Variable::string_int_(System::Get_File("TAHack.cfg", 46));
+	int UI_Menu_SpawnVehicle_Key = Variable::string_int_(System::Get_File("TAHack.cfg", 47));
+	BOOL UI_Menu_SpawnVehicle_Button = false;
+	int UI_Menu_SpawnVehicle_List = 0;
 }
 using namespace TAHack_Config_Var;
 //--------------------------------------------------------------------
 void Thread_Menu() noexcept
 {
 	System::Log("Load Thread: Thread_Menu()");
-	GUI_BL_.Window_Create(1010, 610, "TAHack ", true);
+	GUI_BL_.Window_Create(1440, 610, "TAHack ", true);
 	while (1)
 	{
 		static int UI_Panel = 0; static vector<int> WindowSize = { 0 ,0 }; if (!MenuShowState)WindowSize = { 0 ,0 };
@@ -116,8 +120,13 @@ void Thread_Menu() noexcept
 				GUI_BL_.GUI_Checkbox(Block_Weapon, 1, "One hit kill", UI_Menu_OneHitKill);
 				GUI_BL_.GUI_Checkbox(Block_Weapon, 2, "Bullet type", UI_Menu_BulletType);
 				GUI_BL_.GUI_Slider<int, class GTA_Menu_11>(Block_Weapon, 3, "Type", 0, 99, UI_Menu_BulletType_Value);
+				const auto Block_SpawnVehicle = GUI_BL_.GUI_Block(1010, 30, 550, "Spawn vehicle");
+				GUI_BL_.GUI_Checkbox(Block_SpawnVehicle, 1, "Enabled", UI_Menu_SpawnVehicle);
+				GUI_BL_.GUI_Button_Small(Block_SpawnVehicle, 1, UI_Menu_SpawnVehicle_Button);
+				GUI_BL_.GUI_KeySelector<class GTA_Menu_12>(Block_SpawnVehicle, 1, UI_Menu_SpawnVehicle_Key);
+				GUI_BL_.GUI_List(Block_SpawnVehicle, 2, { "Oppressor Mk2","P-996 LAZER","F-160 RAIJU","Vigilante","Deveste Eight","TM-02 KHANJALI","Kuruma","Savage" }, UI_Menu_SpawnVehicle_List, 19);
 				GUI_BL_.GUI_Tips({ Block_Weapon.x + 10,Block_Weapon.y }, 3, "Self research. XD");
-				WindowSize = { 1010 ,610 };
+				WindowSize = { 1440 ,610 };
 			}
 			else if (UI_Panel == 1)//Setting
 			{
@@ -132,7 +141,7 @@ void Thread_Menu() noexcept
 				if (Button_AuthorLink)System::Open_Website("https://github.com/Coslly");
 				const auto Block_Menu = GUI_BL_.GUI_Block(150, 210, 340, "Menu");
 				GUI_BL_.GUI_Text(Block_Menu, 1, "Menu key");
-				GUI_BL_.GUI_KeySelector<class GTA_Menu_12>(Block_Menu, 1, UI_Settings_MenuKey);
+				GUI_BL_.GUI_KeySelector<class GTA_Menu_13>(Block_Menu, 1, UI_Settings_MenuKey);
 				GUI_BL_.GUI_Checkbox(Block_Menu, 2, "Menu color", UI_Settings_CustomMenuColor);
 				GUI_BL_.GUI_ColorSelector_a(Block_Menu, 2, UI_Settings_MenuColor);
 				if (UI_Settings_MenuColor.a < 200)UI_Settings_MenuColor.a = 200; UI_Settings_MenuColor_A = UI_Settings_MenuColor.a;
@@ -222,7 +231,9 @@ void Thread_Menu() noexcept
 						to_string(UI_Legit_TeleportWaypoint_Key) + "\n" +
 						to_string(UI_Settings_WaterMark) + "\n" +
 						to_string(UI_Menu_Snow) + "\n" +
-						to_string(UI_Menu_AntiAFK) + "\n"
+						to_string(UI_Menu_AntiAFK) + "\n" +
+						to_string(UI_Menu_SpawnVehicle) + "\n" +
+						to_string(UI_Menu_SpawnVehicle_Key) + "\n"
 					);
 				}
 				if (UI_Settings_StartGTA)System::Open_Website("steam://rungameid/271590");//Start GTA5
@@ -273,6 +284,18 @@ void Thread_Memory() noexcept
 				else WeaponImpactType(true, -1);//默认子弹类型
 				if (UI_Menu_PublicSession)LoadSession(0);//切换公共战局
 				else if (UI_Menu_InviteOnlySession)LoadSession(11);//切换邀请战局
+				if ((UI_Menu_SpawnVehicle && System::Get_Key(UI_Menu_SpawnVehicle_Key)) || UI_Menu_SpawnVehicle_Button)
+				{
+					if (UI_Menu_SpawnVehicle_List == 0)SpawnVehicle("oppressor2");
+					else if (UI_Menu_SpawnVehicle_List == 1)SpawnVehicle("lazer");
+					else if (UI_Menu_SpawnVehicle_List == 2)SpawnVehicle("raiju");
+					else if (UI_Menu_SpawnVehicle_List == 3)SpawnVehicle("vigilante");
+					else if (UI_Menu_SpawnVehicle_List == 4)SpawnVehicle("deveste");
+					else if (UI_Menu_SpawnVehicle_List == 5)SpawnVehicle("khanjali");
+					else if (UI_Menu_SpawnVehicle_List == 6)SpawnVehicle("kuruma2");
+					else if (UI_Menu_SpawnVehicle_List == 7)SpawnVehicle("savage");
+					Beep(100, 30);
+				}
 			}
 			else {//Legit
 				if (System::Sleep_Tick<class GTA5_LegitFunc_Sleep_Class_>(300) && UI_Legit_HealthLock)//锁定血量

@@ -24,11 +24,14 @@ namespace GTA5_SDK//GTA5作弊开发助手
 		const auto pCWeaponInfo = 0x20;
 		const auto oDamage = 0xB0;
 		const auto pCNavigation = 0x30;
+		const auto oRight = 0x20;
+		const auto oForward = 0x30;
 		const auto oPosition = 0x50;
 		const auto pCVehicle = 0xD10;
 		const auto oVGravity = 0xC8C;
 		const auto oImpactType = 0x20;
 		const auto oImpactExplosion = 0x24;
+		const auto pVisual = 0x90;
 	}
 	using namespace GTA5_Offsets;
 	namespace Base//基础内存
@@ -116,7 +119,12 @@ namespace GTA5_SDK//GTA5作弊开发助手
 				if (GTA_mem.Read_Level<BOOL>(LocalPlayer, { 0xE32 }))GTA_mem.Write_Level<Variable::Vector3>(LocalPlayer, { pCVehicle,pCNavigation,oPosition }, SetValue);//当人物在载具内
 				else GTA_mem.Write_Level<Variable::Vector3>(LocalPlayer, { pCNavigation,oPosition }, SetValue);
 			}
-			return GTA_mem.Read_Level<Variable::Vector3>(LocalPlayer, { pCVehicle,pCNavigation,oPosition });
+			return GTA_mem.Read_Level<Variable::Vector3>(LocalPlayer, { pCNavigation,oPosition });
+		}
+		Variable::Vector3 ViewAngle(BOOL Set = false, Variable::Vector3 SetValue = { 0,0 }) noexcept//人物朝向坐标
+		{
+			if (Set)GTA_mem.Write_Level<Variable::Vector3>(LocalPlayer, { pVisual }, SetValue);
+			return GTA_mem.Read_Level<Variable::Vector3>(LocalPlayer, { pVisual });
 		}
 		BOOL VehicleGod(BOOL Set = false, BOOL SetValue = 0) noexcept//载具无敌
 		{
@@ -146,10 +154,51 @@ namespace GTA5_SDK//GTA5作弊开发助手
 			//12 加入帮会伙伴
 			const auto SessionSwitchType = 1575032;
 			const auto SessionSwitchState = 1574589;
-			Set_GlobalValue<int>(SessionSwitchType, SessionID);
-			Set_GlobalValue<int>(SessionSwitchState, 1);
+			Set_GlobalValue(SessionSwitchType, SessionID);
+			Set_GlobalValue(SessionSwitchState, 1);
 			Sleep(200);
-			Set_GlobalValue<int>(SessionSwitchState, 0);
+			Set_GlobalValue(SessionSwitchState, 0);
+		}
+		void SpawnVehicle(string VehicleName = "oppressor2") noexcept//刷出线上载具 (载具名称要小写)
+		{
+			const auto oVMCreate = 2695991;//偏移量
+			auto SpawnPos = GTA_mem.Read_Level<Variable::Vector3>(LocalPlayer, { pVisual });
+			SpawnPos.x += GTA_mem.Read_Level<float>(LocalPlayer, { pCNavigation,oForward }) * 5;
+			SpawnPos.y += GTA_mem.Read_Level<float>(LocalPlayer, { pCNavigation,oRight }) * 5;
+			Set_GlobalValue(oVMCreate + 7 + 0, SpawnPos.x);//载具坐标 X
+			Set_GlobalValue(oVMCreate + 7 + 1, SpawnPos.y);//载具坐标 Y
+			Set_GlobalValue(oVMCreate + 7 + 2, -255.f);//载具坐标 Z
+			auto Hash = 0u; for (unsigned int c : VehicleName) { Hash += c; Hash += Hash << 10; Hash ^= Hash >> 6; }Hash += Hash << 3; Hash ^= Hash >> 11; Hash += Hash << 15;
+			Set_GlobalValue(oVMCreate + 27 + 66, Hash);//载具哈希值 https://www.bbfas.com/vc/#google_vignette
+			Set_GlobalValue(oVMCreate + 3, 0);//pegasus
+			Set_GlobalValue(oVMCreate + 5, 1);//开始生成载具1
+			Set_GlobalValue(oVMCreate + 2, 1);//开始生成载具2
+			Set_GlobalValue(oVMCreate + 27 + 1, to_string(25688831)[8]);//车牌
+			//载具配置 值设置-1代表载具默认配置
+			Set_GlobalValue(oVMCreate + 27 + 5, -1);//主色调
+			Set_GlobalValue(oVMCreate + 27 + 6, -1);//副色调
+			Set_GlobalValue(oVMCreate + 27 + 7, -1);//珠光色
+			for (short i = 0; i < 49; i++)Set_GlobalValue(oVMCreate + 27 + 10 + i, -1);
+			Set_GlobalValue(oVMCreate + 27 + 8, -1);//车轮颜色 
+			Set_GlobalValue(oVMCreate + 27 + 69, -1);//车轮类型
+			Set_GlobalValue(oVMCreate + 27 + 33, -1);//车轮选择
+			Set_GlobalValue(oVMCreate + 27 + 24, -1);// 喇叭
+			Set_GlobalValue(oVMCreate + 27 + 27, 1);//涡轮增压
+			Set_GlobalValue(oVMCreate + 27 + 28, 1);
+			Set_GlobalValue(oVMCreate + 27 + 30, -1);//烧胎烟雾
+			Set_GlobalValue(oVMCreate + 27 + 32, -1);//氙气车灯 (0-14)
+			Set_GlobalValue(oVMCreate + 27 + 60, 1);//起落架/载具状态
+			Set_GlobalValue(oVMCreate + 27 + 62, 200);// 烧胎烟雾颜色 R  
+			Set_GlobalValue(oVMCreate + 27 + 63, 200);// G
+			Set_GlobalValue(oVMCreate + 27 + 64, 255);// B
+			Set_GlobalValue(oVMCreate + 27 + 65, -1);// 窗户  Window tint 0-6  
+			Set_GlobalValue(oVMCreate + 27 + 74, 200);//霓虹灯颜色 R
+			Set_GlobalValue(oVMCreate + 27 + 75, 200);//G
+			Set_GlobalValue(oVMCreate + 27 + 76, 255);//B
+			//载具配置
+			Set_GlobalValue(oVMCreate + 27 + 77, 0xF0400200);//载具状态
+			Set_GlobalValue(oVMCreate + 27 + 95, 14);//拥有载具标志
+			Set_GlobalValue(oVMCreate + 27 + 94, 2);//个人载具标志
 		}
 	}
 	using namespace Base;
