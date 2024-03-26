@@ -168,7 +168,7 @@ namespace GTA5_SDK//GTA5作弊开发助手
 			Set_GlobalValue(oVMCreate + 7 + 0, SpawnPos.x);//载具坐标 X
 			Set_GlobalValue(oVMCreate + 7 + 1, SpawnPos.y);//载具坐标 Y
 			Set_GlobalValue(oVMCreate + 7 + 2, -255.f);//载具坐标 Z
-			auto Hash = 0u; for (unsigned int c : VehicleName) { Hash += c; Hash += Hash << 10; Hash ^= Hash >> 6; }Hash += Hash << 3; Hash ^= Hash >> 11; Hash += Hash << 15;
+			auto Hash = 0u; for (unsigned int c : Variable::String_Lower(VehicleName)) { Hash += c; Hash += Hash << 10; Hash ^= Hash >> 6; }Hash += Hash << 3; Hash ^= Hash >> 11; Hash += Hash << 15;
 			Set_GlobalValue(oVMCreate + 27 + 66, Hash);//载具哈希值 https://www.bbfas.com/vc/#google_vignette
 			Set_GlobalValue(oVMCreate + 3, 0);//pegasus
 			Set_GlobalValue(oVMCreate + 5, 1);//开始生成载具1

@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 105;
-const string ReleaseDate = "[2024-03-24 20:00]";
+const int ReleaseVersion = 106;
+const string ReleaseDate = "[2024-03-26 22:00]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
