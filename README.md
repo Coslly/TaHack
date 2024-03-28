@@ -10,6 +10,8 @@
 You need to modify the offset at the top of the `Main.cpp` file content.
 
 The offset will change every game update.
+
+Subsequent updates will not modify the underlying code and header file code.
 ## 🤩Showcase
 ![image](https://github.com/Coslly/TaHack/blob/main/ShowImage1.png?raw=true)
 ![image](https://github.com/Coslly/TaHack/blob/main/ShowImage2.png?raw=true)
