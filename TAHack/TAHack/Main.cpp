@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 106;
-const string ReleaseDate = "[2024-03-26 22:00]";
+const int ReleaseVersion = 107;
+const string ReleaseDate = "[2024-04-01 11:00]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -65,6 +65,7 @@ namespace TAHack_Config_Var
 	int UI_Menu_SpawnVehicle_Key = Variable::string_int_(System::Get_File("TAHack.cfg", 47));
 	BOOL UI_Menu_SpawnVehicle_Button = false;
 	int UI_Menu_SpawnVehicle_List = 0;
+	string UI_Menu_SpawnVehicle_String = "";
 }
 using namespace TAHack_Config_Var;
 //--------------------------------------------------------------------
@@ -124,8 +125,10 @@ void Thread_Menu() noexcept
 				GUI_BL_.GUI_Checkbox(Block_SpawnVehicle, 1, "Enabled", UI_Menu_SpawnVehicle);
 				GUI_BL_.GUI_Button_Small(Block_SpawnVehicle, 1, UI_Menu_SpawnVehicle_Button);
 				GUI_BL_.GUI_KeySelector<class GTA_Menu_12>(Block_SpawnVehicle, 1, UI_Menu_SpawnVehicle_Key);
-				GUI_BL_.GUI_List(Block_SpawnVehicle, 2, { "Oppressor Mk2","P-996 LAZER","F-160 RAIJU","Vigilante","Deveste Eight","TM-02 KHANJALI","Kuruma","Savage" }, UI_Menu_SpawnVehicle_List, 19);
+				GUI_BL_.GUI_InputText<class GTA_Menu_13>(Block_SpawnVehicle, 2, UI_Menu_SpawnVehicle_String);
+				GUI_BL_.GUI_List(Block_SpawnVehicle, 3, { "Oppressor Mk2","P-996 LAZER","F-160 RAIJU","Vigilante","Deveste Eight","TM-02 KHANJALI","Kuruma","Savage" }, UI_Menu_SpawnVehicle_List, 17);
 				GUI_BL_.GUI_Tips({ Block_Weapon.x + 10,Block_Weapon.y }, 3, "Self research. XD");
+				GUI_BL_.GUI_Tips({ Block_SpawnVehicle.x + 10,Block_SpawnVehicle.y }, 2, "Custom vehicle.");
 				WindowSize = { 1440 ,610 };
 			}
 			else if (UI_Panel == 1)//Setting
@@ -141,7 +144,7 @@ void Thread_Menu() noexcept
 				if (Button_AuthorLink)System::Open_Website("https://github.com/Coslly");
 				const auto Block_Menu = GUI_BL_.GUI_Block(150, 210, 340, "Menu");
 				GUI_BL_.GUI_Text(Block_Menu, 1, "Menu key");
-				GUI_BL_.GUI_KeySelector<class GTA_Menu_13>(Block_Menu, 1, UI_Settings_MenuKey);
+				GUI_BL_.GUI_KeySelector<class GTA_Menu_14>(Block_Menu, 1, UI_Settings_MenuKey);
 				GUI_BL_.GUI_Checkbox(Block_Menu, 2, "Menu color", UI_Settings_CustomMenuColor);
 				GUI_BL_.GUI_ColorSelector_a(Block_Menu, 2, UI_Settings_MenuColor);
 				if (UI_Settings_MenuColor.a < 200)UI_Settings_MenuColor.a = 200; UI_Settings_MenuColor_A = UI_Settings_MenuColor.a;
@@ -173,11 +176,11 @@ void Thread_Menu() noexcept
 					GUI_BL_.GUI_Checkbox(Block_Menu, 2, "Health lock", UI_Legit_HealthLock);
 					GUI_BL_.GUI_Button_Small(Block_Menu, 2, UI_Legit_Suicide);
 					GUI_BL_.GUI_Checkbox(Block_Menu, 3, "Vehicle gravity", UI_Legit_VehicleGravity);
-					GUI_BL_.GUI_Slider<float, class GTA_Menu_14>(Block_Menu, 4, "Value", 0, 50, UI_Legit_VehicleGravity_Value);
+					GUI_BL_.GUI_Slider<float, class GTA_Menu_15>(Block_Menu, 4, "Value", 0, 50, UI_Legit_VehicleGravity_Value);
 					GUI_BL_.GUI_Checkbox(Block_Menu, 5, "Vehicle Anti gravity", UI_Legit_VehicleAntiGravity);
-					GUI_BL_.GUI_KeySelector<class GTA_Menu_15>(Block_Menu, 5, UI_Legit_VehicleAntiGravity_Key);
+					GUI_BL_.GUI_KeySelector<class GTA_Menu_16>(Block_Menu, 5, UI_Legit_VehicleAntiGravity_Key);
 					GUI_BL_.GUI_Checkbox(Block_Menu, 6, "Teleport waypoint", UI_Legit_TeleportWaypoint, { 150,100,150 });
-					GUI_BL_.GUI_KeySelector<class GTA_Menu_16>(Block_Menu, 6, UI_Legit_TeleportWaypoint_Key);
+					GUI_BL_.GUI_KeySelector<class GTA_Menu_17>(Block_Menu, 6, UI_Legit_TeleportWaypoint_Key);
 				}
 				WindowSize = { 580 ,440 };
 			}
@@ -286,7 +289,8 @@ void Thread_Memory() noexcept
 				else if (UI_Menu_InviteOnlySession)LoadSession(11);//切换邀请战局
 				if ((UI_Menu_SpawnVehicle && System::Get_Key(UI_Menu_SpawnVehicle_Key)) || UI_Menu_SpawnVehicle_Button)
 				{
-					if (UI_Menu_SpawnVehicle_List == 0)SpawnVehicle("oppressor2");
+					if (UI_Menu_SpawnVehicle_String != "")SpawnVehicle(UI_Menu_SpawnVehicle_String);//https://www.bbfas.com/vc/#google_vignette
+					else if (UI_Menu_SpawnVehicle_List == 0)SpawnVehicle("oppressor2");
 					else if (UI_Menu_SpawnVehicle_List == 1)SpawnVehicle("lazer");
 					else if (UI_Menu_SpawnVehicle_List == 2)SpawnVehicle("raiju");
 					else if (UI_Menu_SpawnVehicle_List == 3)SpawnVehicle("vigilante");

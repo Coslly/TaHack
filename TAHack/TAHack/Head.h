@@ -1,4 +1,4 @@
-﻿//2024-03-26 22:00
+﻿//2024-03-31 12:00
 #pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -191,8 +191,9 @@ namespace Variable//变量转换
         if (w >= 0.01f)return { x,y,w };
         else return { 9999,9999,9999 };
     }
-    template<class A>
-    Vector3 Animation_AVec(Vector3 To_VAlue, float Speed = 10) noexcept
+    //-----------------------------------------------------------------------------------------------------------------------------
+    template<class CreateClassName>
+    Vector3 Animation_Vec3(Vector3 To_VAlue, float Speed = 10) noexcept//坐标动画
     {
         static Vector3 ReturnValue = To_VAlue;
         if (To_VAlue.x > ReturnValue.x)ReturnValue.x += (To_VAlue.x - ReturnValue.x) / Speed;
@@ -201,6 +202,21 @@ namespace Variable//变量转换
         else if (To_VAlue.y < ReturnValue.y)ReturnValue.y -= (ReturnValue.y - To_VAlue.y) / Speed;
         if (To_VAlue.z > ReturnValue.z)ReturnValue.z += (To_VAlue.z - ReturnValue.z) / Speed;
         else if (To_VAlue.z < ReturnValue.z)ReturnValue.z -= (ReturnValue.z - To_VAlue.z) / Speed;
+        return ReturnValue;
+    }
+    template<class CreateClassName>
+    Vector4 Animation_Vec4(Vector4 To_VAlue, float Speed = 10) noexcept//颜色动画
+    {
+        if (Speed < 1)Speed = 1;//防止过量
+        static Vector4 ReturnValue = To_VAlue;
+        if (To_VAlue.r > ReturnValue.r)ReturnValue.r += (To_VAlue.r - ReturnValue.r) / Speed;
+        else if (To_VAlue.r < ReturnValue.r)ReturnValue.r -= (ReturnValue.r - To_VAlue.r) / Speed;
+        if (To_VAlue.g > ReturnValue.g)ReturnValue.g += (To_VAlue.g - ReturnValue.g) / Speed;
+        else if (To_VAlue.g < ReturnValue.g)ReturnValue.g -= (ReturnValue.g - To_VAlue.g) / Speed;
+        if (To_VAlue.b > ReturnValue.b)ReturnValue.b += (To_VAlue.b - ReturnValue.b) / Speed;
+        else if (To_VAlue.b < ReturnValue.b)ReturnValue.b -= (ReturnValue.b - To_VAlue.b) / Speed;
+        if (To_VAlue.a > ReturnValue.a)ReturnValue.a += (To_VAlue.a - ReturnValue.a) / Speed;
+        else if (To_VAlue.a < ReturnValue.a)ReturnValue.a -= (ReturnValue.a - To_VAlue.a) / Speed;
         return ReturnValue;
     }
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -448,23 +464,21 @@ namespace Window//窗口
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
-    LRESULT WINAPI Start_GDI_Window_Prosess(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) noexcept//辅助
+    LRESULT WINAPI Start_GDI_Window_Prosess(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) noexcept//窗口消息循环
     {
         switch (msg)
         {
-        case WM_ERASEBKGND: return TRUE;
-            break;
-        case WM_PAINT: return TRUE;
-            break;
+        case WM_ERASEBKGND: return TRUE; break;
+        case WM_PAINT: return TRUE; break;
+        case WM_CLOSE: exit(0); break;
         }
-        return DefWindowProcW(hwnd, msg, wp, lp);  //定义回调函数的返回值
+        return DefWindowProcW(hwnd, msg, wp, lp);//定义回调函数的返回值
     }
     class Windows//更加方便的 窗口创建
     {
     private:
         HWND Window_Hwnd = NULL;//GUI Window HWND
-        int BKX = 0;
-        int BKY = 0;
+        int BKX = 0; int BKY = 0;
     public:
         //----------------------------------------------------------------------------------------
         HWND Create_Window(int Size_X, int Size_Y, string WindowName, BOOL IfTop, HWND hWndParent = 0) noexcept//创建窗口
@@ -1890,7 +1904,7 @@ namespace System//Windows系统
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
 }
-namespace EasyGUI//EasyGUI Release[2024-03-26 22:00]
+namespace EasyGUI//EasyGUI Release[2024-03-31 12:00]
 {
     /*
     int main()
@@ -2180,7 +2194,7 @@ namespace EasyGUI//EasyGUI Release[2024-03-26 22:00]
             return Key_State;
         }
         //---------------------------------------------------------------------
-        template<class A>//防止冲突
+        template<class CreateClassName>//防止冲突
         float In_Animation(float Value, float Speed = 1.3, Vector2 Limit = { 0,0 }) noexcept//快到慢动画
         {
             static float ReturnValue = Value;
@@ -2194,7 +2208,7 @@ namespace EasyGUI//EasyGUI Release[2024-03-26 22:00]
             return ReturnValue;
         }
         //---------------------------------------------------------------------
-        template<class A>//防止同函数同步
+        template<class CreateClassName>//防止同函数同步
         BOOL In_TickSleep(int Time_MS) noexcept//不受线程影响的Sleep函数
         {
             const long Tick = GetTickCount64();
@@ -2300,8 +2314,8 @@ namespace EasyGUI//EasyGUI Release[2024-03-26 22:00]
                 EasyGUI_WindowHWND = hWnd;
                 EasyGUI_WindowHDC = GetWindowDC(hWnd);
                 //---------------------------------------双缓冲开始绘制
-                PaintSize = { Size_X + 300,Size_Y + 300 };//设定坐标上加上100缓冲区
-                EasyGUI_DrawHDC = CreateCompatibleDC(EasyGUI_WindowHDC);
+                PaintSize = { Size_X + 300,Size_Y + 300 };//设定坐标上加上300缓冲区
+                EasyGUI_DrawHDC = CreateCompatibleDC(EasyGUI_WindowHDC);//内存画板 (如果不是最终绘制 请绘制到这里!!!)
                 SelectObject(EasyGUI_DrawHDC, (HBITMAP)CreateCompatibleBitmap(EasyGUI_WindowHDC, PaintSize.x, PaintSize.y));
                 //---------------------------------------------
                 return true;
@@ -2310,8 +2324,8 @@ namespace EasyGUI//EasyGUI Release[2024-03-26 22:00]
         }
         void Draw_GUI(BOOL ReverseColor = false) noexcept//双缓冲结束绘制 (绘制最终返回图片)
         {
-            BitBlt(EasyGUI_WindowHDC, 0, 0, PaintSize.x, PaintSize.y, EasyGUI_DrawHDC, 0, 0, SRCCOPY);
-            if (ReverseColor)BitBlt(EasyGUI_WindowHDC, 0, 0, PaintSize.x, PaintSize.y, EasyGUI_DrawHDC, 0, 0, PATINVERT);//反转颜色
+            if (ReverseColor)BitBlt(EasyGUI_DrawHDC, 0, 0, PaintSize.x, PaintSize.y, EasyGUI_DrawHDC, 0, 0, PATINVERT);//反转颜色
+            BitBlt(EasyGUI_WindowHDC, 0, 0, PaintSize.x, PaintSize.y, EasyGUI_DrawHDC, 0, 0, SRCCOPY);//最终绘制内存中的图像
             //--------------------------------消息循环
             MSG msg = { 0 };
             if (GetMessage(&msg, 0, 0, 0))

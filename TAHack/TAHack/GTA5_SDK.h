@@ -202,7 +202,7 @@ namespace GTA5_SDK//GTA5作弊开发助手
 		}
 	}
 	using namespace Base;
-	BOOL Reload() noexcept//刷新偏移量和内存变量
+	void Reload() noexcept//刷新偏移量和内存变量
 	{
 		if (System::Sleep_Tick<class GTA5_SDK_Address_Update_Sleep_Class_>(5000))
 		{
