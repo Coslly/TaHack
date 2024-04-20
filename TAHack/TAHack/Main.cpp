@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 107;
-const string ReleaseDate = "[2024-04-01 11:00]";
+const int ReleaseVersion = 108;
+const string ReleaseDate = "[2024-04-20 20:00]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -76,11 +76,11 @@ void Thread_Menu() noexcept
 	while (1)
 	{
 		static int UI_Panel = 0; static vector<int> WindowSize = { 0 ,0 }; if (!MenuShowState)WindowSize = { 0 ,0 };
-		GUI_BL_.Window_SetSize({ (int)Variable::Animation<class GTAMEnu_Animation_1>(WindowSize[0], 2),(int)Variable::Animation<class GTAMEnu_Animation_2>(WindowSize[1], 2) });//Animation
+		GUI_BL_.Window_SetSize({ (int)Variable::Animation<class GTAMEnu_Animation_1>(WindowSize[0], 3),(int)Variable::Animation<class GTAMEnu_Animation_2>(WindowSize[1], 3) });//Animation
 		if (!GUI_BL_.Window_Move() && MenuShowState)
 		{
-			if (UI_Settings_CustomMenuColor)GUI_BL_.GUI_BackGround(1369);
-			else GUI_BL_.GUI_BackGround(1368);
+			if (UI_Settings_CustomMenuColor)GUI_BL_.GUI_BackGround(4);
+			else GUI_BL_.GUI_BackGround(3);
 			GUI_BL_.GUI_Block_Panel(20, 20, 100, GUI_BL_.Window_GetSize().y - 40, "", { "Menu","Setting","Legit" }, UI_Panel);
 			if (UI_Panel == 0)//Menu
 			{
@@ -321,7 +321,7 @@ void Thread_Memory() noexcept
 				}
 			}
 		}
-		if (MenuShowState)Sleep(3);//用于更好的接收消息
+		if (MenuShowState)Sleep(5);//用于更好的接收消息
 		else Sleep(50);//节省CPU占用
 	}
 }

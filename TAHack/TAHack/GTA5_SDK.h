@@ -1,15 +1,15 @@
 ﻿#include "Head.h"
 namespace GTA5_SDK//GTA5作弊开发助手
 {
-	HWND GTA_HWND = 0;
+	HWND GTA_HWND = NULL;
 	System::Memory GTA_mem = { "GTA5.exe" };//GTA5 Memory
 	uintptr_t Module_GTA5 = GTA_mem.Get_Module("GTA5.exe");//GTA5.exe ModuleAddress
 	namespace GTA5_Offsets//内存偏移量
 	{
 		uintptr_t WorldPTR, GlobalPTR, LocalPlayer;//动态基址 (基本)
-		const auto oWorldPTR = 0x2593320, oGlobalPTR = 0x2EF59A0;
-		const auto oWayPoint = 0x2022DE0;//可以遍历地图光点获取，也就是get_blip，还可以直接读内存获取，有一个静态地址，没有导航点是64000（浮点），有导航点是导航点坐标
-		const auto TimeADDR = 0x1DA0250;//可以通过手机时间一个一个筛选
+		const auto oWorldPTR = 0x25984C8, oGlobalPTR = 0x2EFA920;
+		const auto oWayPoint = 0x2027F50;//可以遍历地图光点获取，也就是get_blip，还可以直接读内存获取，有一个静态地址，没有导航点是64000（浮点），有导航点是导航点坐标
+		const auto TimeADDR = 0x1DA52D0;//可以通过手机时间一个一个筛选
 		//以下CT表里有 https://www.unknowncheats.me/forum/grand-theft-auto-v/474288-gtatunersscriptgenz-3-0-1-57-final-cut.html#post3273389
 		const auto pCPed = 0x8;
 		const auto oHealth = 0x280;
