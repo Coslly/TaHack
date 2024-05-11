@@ -158,7 +158,7 @@ void Thread_Menu() noexcept
 				GUI_BL_.GUI_Button(Block_Menu, 10, "Close", UI_Settings_CloseMenu, 100);
 				GUI_BL_.GUI_Tips({ Block_Menu.x + 10,Block_Menu.y }, 6, "If you want to reset the default config you can delete TAHack.cfg in the same folder.");
 				if (Module_GTA5)GUI_BL_.GUI_Tips({ Block_Menu.x + 10,Block_Menu.y }, 7, "GTA5.exe -> " + to_string(Module_GTA5));
-				else GUI_BL_.GUI_Tips({ Block_Menu.x + 10,Block_Menu.y }, 7, "GTA5 not found!!!", { 200,100,100 });
+				else GUI_BL_.GUI_Tips({ Block_Menu.x + 10,Block_Menu.y }, 7, "GTA5 not found!!!", 0, { 200,100,100 });
 				GUI_BL_.GUI_Tips({ Block_Menu.x + 10,Block_Menu.y }, 8, "If it doesn't work you can download the latest version in the Release folder.");
 				WindowSize = { 580 ,580 };
 			}
