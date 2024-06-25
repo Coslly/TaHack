@@ -1,5 +1,4 @@
-﻿//2024-05-19 11:30
-#pragma once
+﻿#pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
@@ -194,9 +193,8 @@ namespace Variable//变量转换
         float _x = Matrix[0][0] * Pos.x + Matrix[0][1] * Pos.y + Matrix[0][2] * Pos.z + Matrix[0][3];
         float _y = Matrix[1][0] * Pos.x + Matrix[1][1] * Pos.y + Matrix[1][2] * Pos.z + Matrix[1][3];
         float w = Matrix[3][0] * Pos.x + Matrix[3][1] * Pos.y + Matrix[3][2] * Pos.z + Matrix[3][3];
-        float inv_w = 1.f / w;
-        _x *= inv_w; _y *= inv_w;
-        float x = X * .5f; float y = Y * .5f;
+        _x *= 1.f / w; _y *= 1.f / w;
+        float x = X / 2; float y = Y / 2;
         x += 0.5f * _x * X + 0.5f; y -= 0.5f * _y * Y + 0.5f;
         if (w >= 0.01f)return { x,y,w };
         else return { 9999,9999,9999 };
@@ -346,6 +344,19 @@ namespace Variable//变量转换
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
+    Variable::Vector3 Get_Move_Pos(Variable::Vector3 Pos) noexcept//获取指定坐标移动距离
+    {//System::Get_Move_Pos({ 10, 100 }).x;
+        static auto Old_Pos = Pos;
+        if (Pos.x != Old_Pos.x || Pos.y != Old_Pos.y)
+        {
+            const Variable::Vector3 ReturnValue = { Pos.x - Old_Pos.x,Pos.y - Old_Pos.y };
+            Old_Pos = Pos;
+            return ReturnValue;
+        }
+        else return { 0,0 };
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------
 }
 namespace Window//窗口
 {
@@ -421,7 +432,7 @@ namespace Window//窗口
             if (wcscmp(entrys.szExeFile, wstring(processName.begin(), processName.end()).c_str()) == 0)
             {
                 processId = entrys.th32ProcessID;
-                OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);//开通权限
+                OpenProcess(PROCESS_ALL_ACCESS, 0, processId);//开通权限
                 break;
             }
         }
@@ -454,7 +465,7 @@ namespace Window//窗口
             if (wcscmp(entrys.szExeFile, wstring(processName.begin(), processName.end()).c_str()) == 0)
             {
                 processId = entrys.th32ProcessID;
-                OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);//开通权限
+                OpenProcess(PROCESS_ALL_ACCESS, 0, processId);//开通权限
                 break;
             }
         }
@@ -487,7 +498,7 @@ namespace Window//窗口
     void Kill_Window(HWND Window_HWND) noexcept//关闭指定窗口
     {//Window::Kill_Window(FindWindowA(NULL, "Test Windows"));
         DWORD ProcessID; GetWindowThreadProcessId(Window_HWND, &ProcessID);
-        HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessID);
+        HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, 0, ProcessID);
         TerminateProcess(hProcess, 0); CloseHandle(hProcess);
     }
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -521,8 +532,8 @@ namespace Window//窗口
     {
         switch (msg)
         {
-        case WM_ERASEBKGND: return TRUE; break;
-        case WM_PAINT: return TRUE; break;
+        case WM_ERASEBKGND: return true; break;
+        case WM_PAINT: return true; break;
         case WM_CLOSE: exit(0); break;
         }
         return DefWindowProcW(hwnd, msg, wp, lp);//定义回调函数的返回值
@@ -530,7 +541,7 @@ namespace Window//窗口
     class Windows//更加方便的 窗口创建
     {
     private:
-        HWND Window_Hwnd = NULL;//GUI Window HWND
+        HWND Window_Hwnd = 0;//GUI Window HWND
         int BKX = 0; int BKY = 0;
     public:
         //----------------------------------------------------------------------------------------
@@ -544,11 +555,11 @@ namespace Window//窗口
             RenderWindowM.lpfnWndProc = Window_Process_Loop;//关联消息处理函数,告诉操作系统，如果有事件发生调用这个函数
             RenderWindowM.cbClsExtra = 0;
             RenderWindowM.cbWndExtra = 0;
-            RenderWindowM.hInstance = GetModuleHandle(NULL);//实例句柄
-            RenderWindowM.hIcon = LoadIcon(NULL, IDI_SHIELD);//图标
-            RenderWindowM.hCursor = LoadCursor(NULL, IDC_ARROW);//光标样式
+            RenderWindowM.hInstance = GetModuleHandle(0);//实例句柄
+            RenderWindowM.hIcon = LoadIcon(0, IDI_SHIELD);//图标
+            RenderWindowM.hCursor = LoadCursor(0, IDC_ARROW);//光标样式
             RenderWindowM.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);//画刷
-            RenderWindowM.lpszMenuName = NULL;
+            RenderWindowM.lpszMenuName = 0;
             RenderWindowM.lpszClassName = wstring(WindowName.begin(), WindowName.end()).c_str();//窗口类的名称，操作系统根据类的名称做映射
             RegisterClass(&RenderWindowM);//将这个窗体注册（告诉）到操作系统
             const HWND hWnd = CreateWindowEx(//创建窗口
@@ -562,7 +573,7 @@ namespace Window//窗口
                 , Size_Y
                 , hWndParent//父窗口
                 , 0//系统菜单
-                , GetModuleHandle(NULL)
+                , GetModuleHandle(0)
                 , 0//用户数据
             );
             if (hWnd)//更新显示
@@ -585,11 +596,11 @@ namespace Window//窗口
             RenderWindowM.lpfnWndProc = Window_Process_Loop;
             RenderWindowM.cbClsExtra = 0;
             RenderWindowM.cbWndExtra = 0;
-            RenderWindowM.hInstance = GetModuleHandle(NULL);
-            RenderWindowM.hIcon = LoadIcon(NULL, IDI_SHIELD);
-            RenderWindowM.hCursor = LoadCursor(NULL, IDC_ARROW);
+            RenderWindowM.hInstance = GetModuleHandle(0);
+            RenderWindowM.hIcon = LoadIcon(0, IDI_SHIELD);
+            RenderWindowM.hCursor = LoadCursor(0, IDC_ARROW);
             RenderWindowM.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-            RenderWindowM.lpszMenuName = NULL;
+            RenderWindowM.lpszMenuName = 0;
             RenderWindowM.lpszClassName = wstring(WindowName.begin(), WindowName.end()).c_str();
             RegisterClass(&RenderWindowM);
             const HWND hWnd = CreateWindowEx((WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW), wstring(WindowName.begin(), WindowName.end()).c_str(), wstring(WindowName.begin(), WindowName.end()).c_str(), WS_POPUP, 0, 0, Size_X, Size_Y, hWndParent, 0, GetModuleHandle(NULL), 0);
@@ -598,7 +609,7 @@ namespace Window//窗口
                 DWM_BLURBEHIND bb = { 0 };
                 bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
                 bb.hRgnBlur = CreateRectRgn(0, 0, -1, -1);
-                bb.fEnable = TRUE;
+                bb.fEnable = true;
                 DwmEnableBlurBehindWindow(hWnd, &bb);
                 UpdateWindow(hWnd);
                 ShowWindow(hWnd, SW_SHOW);
@@ -618,11 +629,11 @@ namespace Window//窗口
             RenderWindowM.lpfnWndProc = Window_Process_Loop;
             RenderWindowM.cbClsExtra = 0;
             RenderWindowM.cbWndExtra = 0;
-            RenderWindowM.hInstance = GetModuleHandle(NULL);
-            RenderWindowM.hIcon = LoadIcon(NULL, IDI_SHIELD);
-            RenderWindowM.hCursor = LoadCursor(NULL, IDC_ARROW);
+            RenderWindowM.hInstance = GetModuleHandle(0);
+            RenderWindowM.hIcon = LoadIcon(0, IDI_SHIELD);
+            RenderWindowM.hCursor = LoadCursor(0, IDC_ARROW);
             RenderWindowM.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-            RenderWindowM.lpszMenuName = NULL;
+            RenderWindowM.lpszMenuName = 0;
             RenderWindowM.lpszClassName = wstring(WindowName.begin(), WindowName.end()).c_str();
             RegisterClass(&RenderWindowM);
             const HWND hWnd = CreateWindowEx((WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW), wstring(WindowName.begin(), WindowName.end()).c_str(), wstring(WindowName.begin(), WindowName.end()).c_str(), WS_POPUP, 0, 0, Size_X, Size_Y, hWndParent, 0, GetModuleHandle(NULL), 0);
@@ -685,7 +696,7 @@ namespace Window//窗口
             GetWindowRect(Window_Hwnd, &Windowrect);
             BKX = Windowrect.right - Windowrect.left;
             BKY = Windowrect.bottom - Windowrect.top;
-            MoveWindow(Window_Hwnd, Windowrect.left, Windowrect.top, XX, YY, TRUE);
+            MoveWindow(Window_Hwnd, Windowrect.left, Windowrect.top, XX, YY, true);
         }
         //----------------------------------------------------------------------------------------
         string Get_WindowTitle() noexcept//获取窗口标题
@@ -749,12 +760,12 @@ namespace Window//窗口
                         OldY = (MousePos.y - Windowrect.top);
                         保存鼠标坐标 = false;
                     }
-                    MoveWindow(Window_Hwnd, MousePos.x - OldX, MousePos.y - OldY, Windowrect.right - Windowrect.left, Windowrect.bottom - Windowrect.top, TRUE);//移动窗口到鼠标坐标
+                    MoveWindow(Window_Hwnd, MousePos.x - OldX, MousePos.y - OldY, Windowrect.right - Windowrect.left, Windowrect.bottom - Windowrect.top, true);//移动窗口到鼠标坐标
                     防止脱离 = true;
                 }
                 else if (防止脱离 && GetAsyncKeyState(VK_LBUTTON))
                 {
-                    MoveWindow(Window_Hwnd, MousePos.x - OldX, MousePos.y - OldY, Windowrect.right - Windowrect.left, Windowrect.bottom - Windowrect.top, TRUE);//移动窗口到鼠标坐标
+                    MoveWindow(Window_Hwnd, MousePos.x - OldX, MousePos.y - OldY, Windowrect.right - Windowrect.left, Windowrect.bottom - Windowrect.top, true);//移动窗口到鼠标坐标
                     return true;
                 }
                 else {
@@ -782,7 +793,7 @@ namespace Window//窗口
     HWND Get_PIDtoHWND(DWORD dwProcessID) noexcept//通过pid获取窗口句柄
     {//Window::Get_PIDtoHWND(8102);
         HWND h = GetTopWindow(0);
-        HWND retHwnd = NULL;
+        HWND retHwnd = 0;
         while (h)
         {
             DWORD pid = 0;
@@ -835,15 +846,14 @@ namespace Window//窗口
         HDC CreatePaint(HWND WindowHWND, int X, int Y, int XX, int YY) noexcept//创建画布（在返回值内进行绘制 请勿放在循环*）
         {
             //-----------------------------------------------------------初始化GDI+
-            Gdiplus::GdiplusStartupInput gdiplusstartupinput;
-            ULONG_PTR gdiplusToken;
+            Gdiplus::GdiplusStartupInput gdiplusstartupinput; ULONG_PTR gdiplusToken;
             Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusstartupinput, nullptr);
             //---------------------------------------------------------------------
             StartPos = { X,Y };
             EndPos = { XX,YY };
             HdcWind = GetWindowDC(WindowHWND);
             hMenDC = CreateCompatibleDC(HdcWind);
-            SelectObject(hMenDC, (HBITMAP)CreateCompatibleBitmap(HdcWind, EndPos.x, EndPos.y));
+            SelectObject(hMenDC, CreateCompatibleBitmap(HdcWind, EndPos.x, EndPos.y));
             return hMenDC;
         }
         HDC Get_HDC() noexcept { return hMenDC; }//获取绘制DC
@@ -926,7 +936,7 @@ namespace Window//窗口
             if (AntiAlias)HDCwind.SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);//抗锯齿 https://learn.microsoft.com/en-us/windows/win32/api/gdiplusenums/ne-gdiplusenums-textrenderinghint
             else HDCwind.SetTextRenderingHint(Gdiplus::TextRenderingHintSingleBitPerPixelGridFit);
             Gdiplus::Font font(&fontFamily, FontSize, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);//字体状况(大小or斜体) https://learn.microsoft.com/en-us/windows/win32/api/gdiplusenums/ne-gdiplusenums-fontstyle
-            const auto len = MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, NULL, 0);//转码 UTF-8 (为了显示中文)
+            const auto len = MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, 0, 0);//转码 UTF-8 (为了显示中文)
             wchar_t* wide_text = new wchar_t[len];
             MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, wide_text, len);//转码 UTF-8 (为了显示中文)
             Gdiplus::SolidBrush Brush_Shadow(Gdiplus::Color(Color.a / 1.5, 0, 0, 0));//阴影颜色
@@ -944,7 +954,7 @@ namespace Window//窗口
             if (AntiAlias)HDCwind.SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);//抗锯齿 https://learn.microsoft.com/en-us/windows/win32/api/gdiplusenums/ne-gdiplusenums-textrenderinghint
             else HDCwind.SetTextRenderingHint(Gdiplus::TextRenderingHintSingleBitPerPixelGridFit);
             Gdiplus::Font font(&fontFamily, FontSize, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);//字体状况(大小or斜体) https://learn.microsoft.com/en-us/windows/win32/api/gdiplusenums/ne-gdiplusenums-fontstyle
-            const auto len = MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, NULL, 0);//转码 UTF-8 (为了显示中文)
+            const auto len = MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, 0, 0);//转码 UTF-8 (为了显示中文)
             wchar_t* wide_text = new wchar_t[len];
             MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, wide_text, len);//转码 UTF-8 (为了显示中文)
             Gdiplus::SolidBrush Brush_Shadow(Gdiplus::Color(Color_1.a / 1.5, 0, 0, 0));//阴影颜色
@@ -1008,7 +1018,7 @@ namespace Window//窗口
             const HDC HMS = hMenDC;
             auto Font_Style = DEFAULT_QUALITY;
             if (AntiAlias)Font_Style = NONANTIALIASED_QUALITY;
-            const HGDIOBJ FontPen = SelectObject(HMS, CreateFont(FontSize, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, Font_Style, FF_DONTCARE, wstring(FontName.begin(), FontName.end()).c_str()));
+            const HGDIOBJ FontPen = SelectObject(HMS, CreateFont(FontSize, 0, 0, 0, FW_NORMAL, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, Font_Style, FF_DONTCARE, wstring(FontName.begin(), FontName.end()).c_str()));
             SetTextColor(HMS, RGB(Color.r, Color.g, Color.b));//文字颜色
             SetBkMode(HMS, TRANSPARENT);//背景透明
             TextOutA(HMS, X, Y, String.c_str(), strlen(String.c_str()));
@@ -1120,10 +1130,10 @@ namespace Window//窗口
             GradientFill(hMenDC, vert, 3, &gTRi, 1, GRADIENT_FILL_TRIANGLE);
         }
         //------------------------------------------------------------------------------------------------
-        void Render_SmpStr(int X, int Y, string String, Variable::Vector4 Color_1, Variable::Vector4 Color_2 = { 0,0,0 }, BOOL Frame = true) noexcept//文字绘制(简单样式)(不包含Alpha)
+        void Render_SmpStr(int X, int Y, string String, Variable::Vector4 Color_1, Variable::Vector4 Color_2 = { 0,0,0 }, BOOL Frame = true, int Font_Size = 9) noexcept//文字绘制(简单样式)(不包含Alpha)
         {
             const HDC Hdc = hMenDC;
-            const HGDIOBJ FontPen = SelectObject(Hdc, CreateFont(9, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, FF_DONTCARE, L"Small Fonts"));
+            const HGDIOBJ FontPen = SelectObject(Hdc, CreateFont(Font_Size, 0, 0, 0, FW_NORMAL, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, FF_DONTCARE, L"Small Fonts"));
             SetBkMode(Hdc, TRANSPARENT);//背景透明
             if (Frame)
             {
@@ -1142,12 +1152,12 @@ namespace Window//窗口
             DeleteObject(FontPen);
         }
         //--------------------------------------------------------------------------------------------------------
-        void RenderA_SmpStr(int X, int Y, string String, Variable::Vector4 Color_1, Variable::Vector4 Color_2 = { 0,0,0 }) noexcept//文字绘制(简单样式)(包含Alpha)
+        void RenderA_SmpStr(int X, int Y, string String, Variable::Vector4 Color_1, Variable::Vector4 Color_2 = { 0,0,0 }, int Font_Size = 12) noexcept//文字绘制(简单样式)(包含Alpha)
         {
             Gdiplus::Graphics HDCwind(hMenDC);//HDC
             HDCwind.SetTextRenderingHint(Gdiplus::TextRenderingHintSingleBitPerPixelGridFit);//不应用抗锯齿
             Gdiplus::FontFamily fontFamily(L"Calibri");//字体名字
-            Gdiplus::Font font(&fontFamily, 8, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);//字体状况
+            Gdiplus::Font font(&fontFamily, Font_Size, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);//字体状况
             if (Color_2.a != 0)
             {
                 Gdiplus::SolidBrush Black_Brush(Gdiplus::Color(Color_2.a, Color_2.r, Color_2.g, Color_2.b));//文字颜色(边框)
@@ -1161,6 +1171,29 @@ namespace Window//窗口
                 HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X, Y - 1), &Black_Brush);
             }
             Gdiplus::SolidBrush Color_Brush(Gdiplus::Color(Color_1.a, Color_1.r, Color_1.g, Color_1.b));//文字颜色
+            Gdiplus::PointF pointF(X, Y);//文字绘制坐标
+            HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, pointF, &Color_Brush);//最终绘制
+        }
+        //--------------------------------------------------------------------------------------------------------
+        void RenderA_SmpStr_Gra(int X, int Y, string String, Variable::Vector4 Color_1, Variable::Vector4 Color_2, Variable::Vector4 Color_3 = { 0,0,0 }, int Font_Size = 12, int GradientOffset = 0) noexcept//文字绘制(简单样式)(包含Alpha)(渐变版本)
+        {
+            Gdiplus::Graphics HDCwind(hMenDC);//HDC
+            HDCwind.SetTextRenderingHint(Gdiplus::TextRenderingHintSingleBitPerPixelGridFit);//不应用抗锯齿
+            Gdiplus::FontFamily fontFamily(L"Calibri");//字体名字
+            Gdiplus::Font font(&fontFamily, Font_Size, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel);//字体状况
+            if (Color_2.a != 0)
+            {
+                Gdiplus::SolidBrush Black_Brush(Gdiplus::Color(Color_2.a, Color_2.r, Color_2.g, Color_2.b));//文字颜色(边框)
+                HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X + 1, Y + 1), &Black_Brush);
+                HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X - 1, Y - 1), &Black_Brush);
+                HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X + 1, Y - 1), &Black_Brush);
+                HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X - 1, Y + 1), &Black_Brush);
+                HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X + 1, Y), &Black_Brush);
+                HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X - 1, Y), &Black_Brush);
+                HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X, Y + 1), &Black_Brush);
+                HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, Gdiplus::PointF(X, Y - 1), &Black_Brush);
+            }
+            Gdiplus::LinearGradientBrush Color_Brush(Gdiplus::Point(X, 0), Gdiplus::Point(X + String.size() * Font_Size / 1.7 + GradientOffset, 0), Gdiplus::Color(Color_1.a, Color_1.r, Color_1.g, Color_1.b), Gdiplus::Color(Color_2.a, Color_2.r, Color_2.g, Color_2.b));//文字颜色
             Gdiplus::PointF pointF(X, Y);//文字绘制坐标
             HDCwind.DrawString(wstring(String.begin(), String.end()).c_str(), -1, &font, pointF, &Color_Brush);//最终绘制
         }
@@ -1280,7 +1313,7 @@ namespace Window//窗口
             ID2D1SolidColorBrush* Brush; IDWriteFactory* WriteFactory; IDWriteTextFormat* TextFormat;
             DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(WriteFactory), reinterpret_cast<IUnknown**>(&WriteFactory));
             WriteFactory->CreateTextFormat(wstring(FontName.begin(), FontName.end()).c_str(), 0, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, FontSize, L"", &TextFormat);
-            const auto len = MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, NULL, 0);
+            const auto len = MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, 0, 0);
             wchar_t* wide_text = new wchar_t[len];
             MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, wide_text, len);
             Render_Target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0, Color.a / 255 / 2), &Brush);
@@ -1328,7 +1361,7 @@ namespace Window//窗口
         DwmExtendFrameIntoClientArea(Window_HWND, &margin);
         SetLayeredWindowAttributes(Window_HWND, RGB(0, 0, 0), 255, LWA_ALPHA);
         SetWindowPos(Window_HWND, HWND_TOPMOST, 0, 0, InitialSize.x, InitialSize.y, 0x0002 | 0x0001);
-        MoveWindow(Window_HWND, 0, 0, InitialSize.x, InitialSize.y, TRUE);
+        for (int i = 0; i <= 5; ++i)MoveWindow(Window_HWND, 0, 0, InitialSize.x, InitialSize.y, true);
         ShowWindow(Window_HWND, SW_SHOW);
         return Window_HWND;
     }
@@ -1645,6 +1678,20 @@ namespace System//Windows系统
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
+    Variable::Vector2 Get_Mouse_Move_Pos() noexcept//获取鼠标移动距离
+    {//System::Get_Mouse_Move_Pos().x;
+        POINT MousePos; GetCursorPos(&MousePos);
+        static POINT Old_MousePos = MousePos;
+        if (MousePos.x != Old_MousePos.x || MousePos.y != Old_MousePos.y)
+        {
+            const Variable::Vector2 ReturnValue = { MousePos.x - Old_MousePos.x,MousePos.y - Old_MousePos.y };
+            Old_MousePos = MousePos;
+            return ReturnValue;
+        }
+        else return { 0,0 };
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------
     void DownloadToPath(string Str_URL, string Str_DownloadPath) noexcept//下载文件到目录 当返回true则下载成功 如果要下载的文件大于300kb那么下载的几率会很低
     {//System::DownloadToPath("https://codeload.github.com/cazzwastaken/internal-bhop/zip/refs/heads/main", "C:\\TestFile.zip")
         byte Temp[1024]; ULONG Number = 1; FILE* stream; HINTERNET hSession = InternetOpen(L"RookIE/1.0", INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);
@@ -1767,6 +1814,7 @@ namespace System//Windows系统
     //-----------------------------------------------------------------------------------------------------------------------------
     BOOL Get_Key(int VK_Code) noexcept//获取按键是否被按下（不会出现没有按下却返回true的bug）
     {//System::Get_Key(VK_INSERT);
+        if (!VK_Code)return false;//排除0
         if (GetAsyncKeyState(VK_Code) & 0x8000)return true; else return false;
     }
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -1857,8 +1905,7 @@ namespace System//Windows系统
         //-----------------------------------------------------------------------------------------
         Memory(string ProcessName) noexcept//获取进程ID 用来内存函数(可以用来初始化不放在循环)
         {
-            PROCESSENTRY32 entry = { };
-            entry.dwSize = sizeof(PROCESSENTRY32);
+            PROCESSENTRY32 entry = { }; entry.dwSize = sizeof(PROCESSENTRY32);
             const auto Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
             while (Process32Next(Snapshot, &entry))
             {
@@ -1874,8 +1921,7 @@ namespace System//Windows系统
         //-----------------------------------------------------------------------------------------
         uintptr_t Get_Module(string ModuleName) noexcept//读取模块地址
         {
-            MODULEENTRY32 entry = { };
-            entry.dwSize = sizeof(MODULEENTRY32);
+            MODULEENTRY32 entry = { }; entry.dwSize = sizeof(MODULEENTRY32);
             const auto Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, ProcessID);//获取所有模块
             uintptr_t dwModuleBaseAddress = 0;//返回值
             while (Module32Next(Snapshot, &entry))//遍历所有模块
@@ -1900,7 +1946,7 @@ namespace System//Windows系统
         template<class T>
         T Read(uintptr_t Address) noexcept//读取内存
         {
-            T Value = { };
+            T Value = {};
             ReadProcessMemory(HProcessID, (LPVOID)(Address), &Value, sizeof(T), 0);
             return Value;
         }
@@ -1908,7 +1954,7 @@ namespace System//Windows系统
         template<class T>
         T Write_Level(uintptr_t Address, vector<uintptr_t>Offsets, T value) noexcept//修改地址的内存(等级地址版本)
         {
-            uintptr_t F = { };
+            uintptr_t F = {};
             ReadProcessMemory(HProcessID, (LPVOID)(Address), &F, sizeof(uintptr_t), 0);
             for (short i = 0; i <= Offsets.size() - 1; ++i)ReadProcessMemory(HProcessID, (LPVOID)(F + Offsets[i - 1]), &F, sizeof(uintptr_t), 0);//计算等级
             WriteProcessMemory(HProcessID, (LPVOID)(F + Offsets[Offsets.size() - 1]), &value, sizeof(T), 0);
@@ -1918,8 +1964,7 @@ namespace System//Windows系统
         template<class T>
         T Read_Level(uintptr_t Address, vector<uintptr_t>Offsets) noexcept//获取地址的内存(等级地址版本)
         {
-            uintptr_t F = { };
-            T Returnvalue = { };
+            uintptr_t F = {}; T Returnvalue = {};
             ReadProcessMemory(HProcessID, (LPVOID)(Address), &F, sizeof(uintptr_t), 0);
             for (short i = 0; i <= Offsets.size() - 1; ++i)ReadProcessMemory(HProcessID, (LPVOID)(F + Offsets[i - 1]), &F, sizeof(uintptr_t), 0);//计算等级
             ReadProcessMemory(HProcessID, (LPVOID)(F + Offsets[Offsets.size() - 1]), &Returnvalue, sizeof(T), 0);
@@ -1939,8 +1984,7 @@ namespace System//Windows系统
             HWND h = GetTopWindow(0); HWND retHwnd = 0;
             while (h)
             {
-                DWORD pid = 0;
-                uintptr_t dwTheardId = GetWindowThreadProcessId(h, &pid);
+                DWORD pid = 0; uintptr_t dwTheardId = GetWindowThreadProcessId(h, &pid);
                 if (dwTheardId != 0 && pid == ProcessID && GetParent(h) == 0 && IsWindowVisible(h))retHwnd = h;
                 h = GetNextWindow(h, GW_HWNDNEXT);
             }
@@ -2053,6 +2097,13 @@ namespace System//Windows系统
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
+    void BEEP(short dwFreq, short dwDuration) noexcept//蜂鸣 (安全版本)
+    {//System::BEEP(-100, 100);
+        if (dwDuration <= 0)return;
+        Beep(abs(dwFreq), dwDuration);
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------
 }
 namespace EasyGUI
 {
@@ -2128,7 +2179,7 @@ namespace EasyGUI
             const auto Delta = GET_WHEEL_DELTA_WPARAM(wParam);
             if (Delta > 0)keybd_event(VK_UP, 0, 0, 0);
             else if (Delta < 0)keybd_event(VK_DOWN, 0, 0, 0);
-        }break;
+        } break;
         }
         return DefWindowProc(Hwnd, Message, wParam, lParam);//定义回调函数的返回值
     }
@@ -2290,8 +2341,8 @@ namespace EasyGUI
             if (String == "" || Fount_Size == 0)return;
             if (Fount_Size > 15)Y -= Fount_Size / 3;//平衡上下坐标
             HGDIOBJ FontPen;
-            if (AntiAlias)FontPen = SelectObject(EasyGUI_DrawHDC, CreateFontA(Fount_Size, 0, 0, 0, Font_Width, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, Fount_Name.c_str()));
-            else FontPen = SelectObject(EasyGUI_DrawHDC, CreateFontA(Fount_Size, 0, 0, 0, Font_Width, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, FF_DONTCARE, Fount_Name.c_str()));
+            if (AntiAlias)FontPen = SelectObject(EasyGUI_DrawHDC, CreateFontA(Fount_Size, 0, 0, 0, Font_Width, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, Fount_Name.c_str()));
+            else FontPen = SelectObject(EasyGUI_DrawHDC, CreateFontA(Fount_Size, 0, 0, 0, Font_Width, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, FF_DONTCARE, Fount_Name.c_str()));
             SetTextColor(EasyGUI_DrawHDC, RGB(TextColor.r, TextColor.g, TextColor.b));//文字颜色
             SetBkMode(EasyGUI_DrawHDC, TRANSPARENT);//背景透明
             if (String.find("UTT") != string::npos)//不转换UTF-8
@@ -2301,7 +2352,7 @@ namespace EasyGUI
                 DeleteObject(FontPen);
             }
             else {//转换UTF-8
-                const auto len = MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, NULL, 0);//转码 UTF-8 (为了显示中文)
+                const auto len = MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, 0, 0);//转码 UTF-8 (为了显示中文)
                 wchar_t* wide_text = new wchar_t[len];
                 MultiByteToWideChar(CP_UTF8, 0, String.c_str(), -1, wide_text, len);//转码 UTF-8 (为了显示中文)
                 TextOutW(EasyGUI_DrawHDC, X, Y, wide_text, len - 1);
@@ -2313,7 +2364,7 @@ namespace EasyGUI
         void In_DrawString_Simple(int X, int Y, string String, Vector4 TextColor = { 255,255,255 }) noexcept//绘制简单文字
         {
             if (String == "")return;
-            HGDIOBJ FontPen = SelectObject(EasyGUI_DrawHDC, CreateFontA(12, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, FF_DONTCARE, "Small Fonts"));
+            HGDIOBJ FontPen = SelectObject(EasyGUI_DrawHDC, CreateFontA(12, 0, 0, 0, FW_NORMAL, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, FF_DONTCARE, "Small Fonts"));
             SetBkMode(EasyGUI_DrawHDC, TRANSPARENT);//背景透明
             SetTextColor(EasyGUI_DrawHDC, RGB(0, 0, 0));//文字颜色
             TextOutA(EasyGUI_DrawHDC, X + 1, Y + 1, String.c_str(), strlen(String.c_str()));
@@ -2470,7 +2521,7 @@ namespace EasyGUI
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
         int Window_FPS() noexcept { return EasyGUI_FPS; }//获取GUI绘制帧数
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
-        BOOL Window_Move(short Draw_Delay = 5) noexcept//移动GUI窗口 (在GUI循环线程内加入此函数不需要添加延时函数来降低CPU占用)
+        BOOL Window_Move(short Draw_Delay = 3) noexcept//移动GUI窗口 (在GUI循环线程内加入此函数不需要添加延时函数来降低CPU占用)
         {
             //--------------------------------消息循环
             MSG msg = { 0 }; if (GetMessage(&msg, 0, 0, 0)) { TranslateMessage(&msg); DispatchMessage(&msg); }
@@ -2498,7 +2549,7 @@ namespace EasyGUI
                         if (In_KeyEvent(VK_LBUTTON))Sleep(1);
                         else Sleep(Draw_Delay);//降低CPU占用
                     }
-                    else this_thread::sleep_for(chrono::nanoseconds(100));//纳秒休眠函数 (让滑条更加顺滑)
+                    else this_thread::sleep_for(chrono::nanoseconds(80));//纳秒休眠函数 (让滑条更加顺滑)
                     return false;
                 }
             }

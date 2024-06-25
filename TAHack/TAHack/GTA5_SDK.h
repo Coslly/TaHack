@@ -7,17 +7,17 @@ namespace GTA5_SDK//GTA5作弊开发助手
 	namespace GTA5_Offsets//内存偏移量
 	{
 		uintptr_t WorldPTR, GlobalPTR, LocalPlayer;//动态基址 (基本)
-		const auto oWorldPTR = 0x25984C8, oGlobalPTR = 0x2EFA920;
-		const auto oWayPoint = 0x2027F50;//可以遍历地图光点获取，也就是get_blip，还可以直接读内存获取，有一个静态地址，没有导航点是64000（浮点），有导航点是导航点坐标
-		const auto TimeADDR = 0x1DA52D0;//可以通过手机时间一个一个筛选
+		const auto oWorldPTR = 0x25B14B0, oGlobalPTR = 0x2F235D0;
+		const auto oWayPoint = 0x203FD80;//可以遍历地图光点获取，也就是get_blip，还可以直接读内存获取，有一个静态地址，没有导航点是64000（浮点），有导航点是导航点坐标
+		const auto TimeADDR = 0x1DBC230;//可以通过手机时间一个一个筛选
 		//以下CT表里有 https://www.unknowncheats.me/forum/grand-theft-auto-v/474288-gtatunersscriptgenz-3-0-1-57-final-cut.html#post3273389
 		const auto pCPed = 0x8;
 		const auto oHealth = 0x280;
 		const auto pedArmor = 0x150C;
 		const auto pCPlayerInfo = 0x10A8;
-		const auto oSwimSpeed = 0x1C8;
-		const auto oRunSpeed = 0xD40;
-		const auto oWanted = 0x8D8;
+		const auto oSwimSpeed = 0x1D8;
+		const auto oRunSpeed = 0xD50;
+		const auto oWanted = 0x8E8;
 		const auto oGod = 0x189;
 		const auto oRagdoll = 0x1098;
 		const auto pCPedWeaponManager = 0x10B8;
@@ -152,14 +152,14 @@ namespace GTA5_SDK//GTA5作弊开发助手
 			//10 单人战局
 			//11 仅限邀请战局
 			//12 加入帮会伙伴
-			const auto SessionSwitchType = 1575032;
+			const auto SessionSwitchType = 1575035;
 			const auto SessionSwitchState = 1574589;
 			Set_GlobalValue(SessionSwitchType, SessionID);
 			Set_GlobalValue(SessionSwitchState, 1);
 			Sleep(200);
 			Set_GlobalValue(SessionSwitchState, 0);
 		}
-		void SpawnVehicle(string VehicleName = "oppressor2") noexcept//刷出线上载具 (载具名称要小写)
+		void SpawnVehicle(string VehicleName = "oppressor2") noexcept//刷出线上载具
 		{
 			const auto oVMCreate = 2695991;//偏移量
 			auto SpawnPos = GTA_mem.Read_Level<Variable::Vector3>(LocalPlayer, { pVisual });

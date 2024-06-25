@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 111;
-const string ReleaseDate = "[2024-05-19 11:30]";
+const int ReleaseVersion = 113;
+const string ReleaseDate = "[2024-06-25 21:00]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -138,7 +138,7 @@ void Thread_Menu() noexcept
 				GUI_BL_.GUI_Text(Block_About, 1, "TAHack", GUI_BL_.Global_Get_EasyGUI_Color());
 				GUI_BL_.GUI_Text(Block_About, 1, "            for GTA5 (External)", { 150,150,150 });
 				GUI_BL_.GUI_Text(Block_About, 2, "Release date: " + ReleaseDate + " (" + to_string(ReleaseVersion) + ")", { 150,150,150 });
-				GUI_BL_.GUI_Text(Block_About, 3, "Online version: 1.68", { 150,150,150 });
+				GUI_BL_.GUI_Text(Block_About, 3, "Online version: 1.69", { 150,150,150 });
 				GUI_BL_.GUI_Text(Block_About, 4, "Author: https://github.com/Coslly", { 150,150,150 });
 				BOOL Button_AuthorLink = false;
 				GUI_BL_.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 4, Button_AuthorLink);
@@ -323,8 +323,8 @@ void Thread_Memory() noexcept
 				}
 			}
 		}
-		if (MenuShowState)Sleep(5);//用于更好的接收消息
-		else Sleep(50);//节省CPU占用
+		if (MenuShowState)Sleep(10);//用于更好的接收消息
+		else Sleep(100);//节省CPU占用
 	}
 }
 void Thread_Misc() noexcept
@@ -361,7 +361,7 @@ void Thread_Misc() noexcept
 		if (UI_Settings_LockGameWindow && !MenuShowState)SetForegroundWindow(GTA_HWND);//Lock GTA5 Window
 		GUI_IO_ = GUI_BL_.Get_IO();
 		if (!UI_Settings_CustomMenuColor)GUI_IO_.GUIColor = { GUI_IO_.GUIColor_Rainbow[3],GUI_IO_.GUIColor_Rainbow[4],GUI_IO_.GUIColor_Rainbow[5] };
-		Sleep(1);//CPU
+		Sleep(5);//CPU
 	}
 }
 int main() noexcept
@@ -377,9 +377,7 @@ int main() noexcept
 		AutoUpdate.Release();
 		if (Variable::string_int_(Version) > ReleaseVersion && Window::Message_Box("TAHack Update", "A new version has been released.\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
 		{
-			System::Open_Website("https://github.com/Coslly/TaHack/releases/download/Release/TAHack.exe");
-			Beep(100, 30);
-			exit(0);
+			System::Open_Website("https://github.com/Coslly/TaHack/releases/download/Release/TAHack.exe"); Beep(100, 30); exit(0);
 		}
 	}
 	if (FindWindow(NULL, L"TAHack ")) { MessageBox(NULL, L"Already running.", L"TAHack - Error", MB_ICONERROR); exit(0); }//Prevent multiple openings
