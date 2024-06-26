@@ -161,7 +161,7 @@ namespace GTA5_SDK//GTA5作弊开发助手
 		}
 		void SpawnVehicle(string VehicleName = "oppressor2") noexcept//刷出线上载具
 		{
-			const auto oVMCreate = 2695991;//偏移量
+			const auto oVMCreate = 2696212;//偏移量
 			auto SpawnPos = GTA_mem.Read_Level<Variable::Vector3>(LocalPlayer, { pVisual });
 			SpawnPos.x += GTA_mem.Read_Level<float>(LocalPlayer, { pCNavigation,oForward }) * 5;
 			SpawnPos.y += GTA_mem.Read_Level<float>(LocalPlayer, { pCNavigation,oRight }) * 5;
