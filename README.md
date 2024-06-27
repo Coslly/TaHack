@@ -3,6 +3,7 @@
 - Online Version: 1.69
 - Saveable System
 - Automatically detect updates
+- Cloud Offset
 - GUI project: https://github.com/Coslly/EasyGUI-Lightweight.git
 - C++ Build in Release | x64
 - Not detected by anti-cheat
