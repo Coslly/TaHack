@@ -6,32 +6,37 @@ namespace GTA5_SDK//GTA5作弊开发助手
 	uintptr_t Module_GTA5 = GTA_mem.Get_Module("GTA5.exe");//GTA5.exe ModuleAddress
 	namespace GTA5_Offsets//内存偏移量
 	{
+		string Offsets_Date = "[0000-00-00 00:00]";
+		string SupportGameVersion = "0.00";
 		uintptr_t WorldPTR, GlobalPTR, LocalPlayer;//动态基址 (基本)
-		const auto oWorldPTR = 0x25B14B0, oGlobalPTR = 0x2F235D0;
-		const auto oWayPoint = 0x203FD80;//可以遍历地图光点获取，也就是get_blip，还可以直接读内存获取，有一个静态地址，没有导航点是64000（浮点），有导航点是导航点坐标
-		const auto TimeADDR = 0x1DBC230;//可以通过手机时间一个一个筛选
+		uintptr_t oWorldPTR = 0x0, oGlobalPTR = 0x0;
+		uintptr_t oWayPoint = 0x0;//可以遍历地图光点获取，也就是get_blip，还可以直接读内存获取，有一个静态地址，没有导航点是64000（浮点），有导航点是导航点坐标
+		uintptr_t TimeADDR = 0x0;//可以通过手机时间一个一个筛选
 		//以下CT表里有 https://www.unknowncheats.me/forum/grand-theft-auto-v/474288-gtatunersscriptgenz-3-0-1-57-final-cut.html#post3273389
-		const auto pCPed = 0x8;
-		const auto oHealth = 0x280;
-		const auto pedArmor = 0x150C;
-		const auto pCPlayerInfo = 0x10A8;
-		const auto oSwimSpeed = 0x1D8;
-		const auto oRunSpeed = 0xD50;
-		const auto oWanted = 0x8E8;
-		const auto oGod = 0x189;
-		const auto oRagdoll = 0x1098;
-		const auto pCPedWeaponManager = 0x10B8;
-		const auto pCWeaponInfo = 0x20;
-		const auto oDamage = 0xB0;
-		const auto pCNavigation = 0x30;
-		const auto oRight = 0x20;
-		const auto oForward = 0x30;
-		const auto oPosition = 0x50;
-		const auto pCVehicle = 0xD10;
-		const auto oVGravity = 0xC8C;
-		const auto oImpactType = 0x20;
-		const auto oImpactExplosion = 0x24;
-		const auto pVisual = 0x90;
+		uintptr_t pCPed = 0x0;
+		uintptr_t oHealth = 0x0;
+		uintptr_t pedArmor = 0x0;
+		uintptr_t pCPlayerInfo = 0x0;
+		uintptr_t oSwimSpeed = 0x0;
+		uintptr_t oRunSpeed = 0x0;
+		uintptr_t oWanted = 0x0;
+		uintptr_t oGod = 0x0;
+		uintptr_t oRagdoll = 0x0;
+		uintptr_t pCPedWeaponManager = 0x0;
+		uintptr_t pCWeaponInfo = 0x0;
+		uintptr_t oDamage = 0x0;
+		uintptr_t pCNavigation = 0x0;
+		uintptr_t oRight = 0x0;
+		uintptr_t oForward = 0x0;
+		uintptr_t oPosition = 0x0;
+		uintptr_t pCVehicle = 0x0;
+		uintptr_t oVGravity = 0x0;
+		uintptr_t oImpactType = 0x0;
+		uintptr_t oImpactExplosion = 0x0;
+		uintptr_t pVisual = 0x0;
+		uintptr_t SessionSwitchType = 0x0;
+		uintptr_t SessionSwitchState = 0x0;
+		uintptr_t oVMCreate = 0x0;
 	}
 	using namespace GTA5_Offsets;
 	namespace Base//基础内存
@@ -152,8 +157,6 @@ namespace GTA5_SDK//GTA5作弊开发助手
 			//10 单人战局
 			//11 仅限邀请战局
 			//12 加入帮会伙伴
-			const auto SessionSwitchType = 1575035;
-			const auto SessionSwitchState = 1574589;
 			Set_GlobalValue(SessionSwitchType, SessionID);
 			Set_GlobalValue(SessionSwitchState, 1);
 			Sleep(200);
@@ -161,7 +164,6 @@ namespace GTA5_SDK//GTA5作弊开发助手
 		}
 		void SpawnVehicle(string VehicleName = "oppressor2") noexcept//刷出线上载具
 		{
-			const auto oVMCreate = 2696212;//偏移量
 			auto SpawnPos = GTA_mem.Read_Level<Variable::Vector3>(LocalPlayer, { pVisual });
 			SpawnPos.x += GTA_mem.Read_Level<float>(LocalPlayer, { pCNavigation,oForward }) * 5;
 			SpawnPos.y += GTA_mem.Read_Level<float>(LocalPlayer, { pCNavigation,oRight }) * 5;
@@ -202,15 +204,54 @@ namespace GTA5_SDK//GTA5作弊开发助手
 		}
 	}
 	using namespace Base;
-	void Reload() noexcept//刷新偏移量和内存变量
+	void Reload(BOOL Timeout = false) noexcept//刷新偏移量和内存变量
 	{
-		if (System::Sleep_Tick<class GTA5_SDK_Address_Update_Sleep_Class_>(5000))
+		if (System::Sleep_Tick<class CLASS_GTA5_SDK_Timeout_Reload>(1000) || Timeout)
 		{
 			GTA_mem = { "GTA5.exe" };
 			GTA_HWND = GTA_mem.Get_ProcessHWND();
 			Module_GTA5 = GTA_mem.Get_Module("GTA5.exe");
 			WorldPTR = GTA_mem.Read<uintptr_t>(Module_GTA5 + oWorldPTR), GlobalPTR = GTA_mem.Read<uintptr_t>(Module_GTA5 + oGlobalPTR);
 			LocalPlayer = WorldPTR + pCPed;
+			if (System::Sleep_Tick<class CLASS_GTA5_SDK_Offsets_Timeout_Reload>(5000) || Timeout)//自动更新偏移量延迟 (减少流量使用)
+			{
+				System::URL_READ URL_OFFSETS = { "Cache_GTA5_Offsets" };
+				if (URL_OFFSETS.StoreMem("https://github.com/Coslly/TaHack/blob/main/Offsets.ofs?raw=true"))//自动更新偏移量 Github更新有十分钟延迟
+				{
+					Offsets_Date = URL_OFFSETS.Read(1); Offsets_Date.erase(0, 2);//偏移更新日期 删除注释符号
+					Offsets_Date = "[" + Offsets_Date + "]";//加上括号
+					SupportGameVersion = URL_OFFSETS.Read(4);
+					oWorldPTR = Variable::string_uint_(URL_OFFSETS.Read(6));
+					oGlobalPTR = Variable::string_uint_(URL_OFFSETS.Read(8));
+					oWayPoint = Variable::string_uint_(URL_OFFSETS.Read(10));
+					TimeADDR = Variable::string_uint_(URL_OFFSETS.Read(12));
+					pCPed = Variable::string_uint_(URL_OFFSETS.Read(14));
+					oHealth = Variable::string_uint_(URL_OFFSETS.Read(16));
+					pedArmor = Variable::string_uint_(URL_OFFSETS.Read(18));
+					pCPlayerInfo = Variable::string_uint_(URL_OFFSETS.Read(20));
+					oSwimSpeed = Variable::string_uint_(URL_OFFSETS.Read(22));
+					oRunSpeed = Variable::string_uint_(URL_OFFSETS.Read(24));
+					oWanted = Variable::string_uint_(URL_OFFSETS.Read(26));
+					oGod = Variable::string_uint_(URL_OFFSETS.Read(28));
+					oRagdoll = Variable::string_uint_(URL_OFFSETS.Read(30));
+					pCPedWeaponManager = Variable::string_uint_(URL_OFFSETS.Read(32));
+					pCWeaponInfo = Variable::string_uint_(URL_OFFSETS.Read(34));
+					oDamage = Variable::string_uint_(URL_OFFSETS.Read(36));
+					pCNavigation = Variable::string_uint_(URL_OFFSETS.Read(38));
+					oRight = Variable::string_uint_(URL_OFFSETS.Read(40));
+					oForward = Variable::string_uint_(URL_OFFSETS.Read(42));
+					oPosition = Variable::string_uint_(URL_OFFSETS.Read(44));
+					pCVehicle = Variable::string_uint_(URL_OFFSETS.Read(46));
+					oVGravity = Variable::string_uint_(URL_OFFSETS.Read(48));
+					oImpactType = Variable::string_uint_(URL_OFFSETS.Read(50));
+					oImpactExplosion = Variable::string_uint_(URL_OFFSETS.Read(52));
+					pVisual = Variable::string_uint_(URL_OFFSETS.Read(54));
+					SessionSwitchType = Variable::string_int_(URL_OFFSETS.Read(56));
+					SessionSwitchState = Variable::string_int_(URL_OFFSETS.Read(58));
+					oVMCreate = Variable::string_int_(URL_OFFSETS.Read(60));
+					URL_OFFSETS.Release();//释放文件
+				}
+			}
 		}
 	}
 }

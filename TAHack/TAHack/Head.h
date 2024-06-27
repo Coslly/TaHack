@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿//2024-06-26 23:20
+#pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
@@ -363,8 +364,8 @@ namespace Window//窗口
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
     template<class A>//防止同窗口冲突  不同的窗口改不同的类
-    Variable::Vector3 Get_PixelColor(int X, int Y, HWND Window_HWND = 0) noexcept//采取屏幕颜色
-    {//Window::Get_PixelColor<class Get_PixelColor>(100, 100).x;
+    Variable::Vector4 Get_PixelColor(int X, int Y, HWND Window_HWND = 0) noexcept//采取屏幕颜色
+    {//Window::Get_PixelColor<class Get_PixelColor>(100, 100).r;
         static auto Window_HDC = GetWindowDC(Window_HWND);
         const auto Pixel = GetPixel(Window_HDC, X, Y);
         return { GetRValue(Pixel), GetGValue(Pixel), GetBValue(Pixel) };
@@ -479,6 +480,18 @@ namespace Window//窗口
     void Set_WindowName(HWND WindowHWND, string Title) noexcept//修改特定窗口标题 修改之后再次修改要修改修改后的标题
     {//Window::Set_WindowName(FindWindow(NULL, L"TestWindow"),"Test Window 1");
         SetWindowText(WindowHWND, wstring(Title.begin(), Title.end()).c_str());//修改窗口标题
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------
+    Variable::Vector2 Get_WindowPos(HWND WindowHWND) noexcept//获取窗口坐标
+    {
+        RECT Windowrect; GetWindowRect(WindowHWND, &Windowrect);
+        return { Windowrect.left ,Windowrect.top };
+    }
+    Variable::Vector2 Get_WindowSize(HWND WindowHWND) noexcept//获取窗口大小
+    {
+        RECT Windowrect; GetWindowRect(WindowHWND, &Windowrect);
+        return { Windowrect.right - Windowrect.left ,Windowrect.bottom - Windowrect.top };
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -1665,7 +1678,7 @@ namespace System//Windows系统
     //-----------------------------------------------------------------------------------------------------------------------------
     int Get_Hold_VKKey() noexcept//获取当前按下的键（VK码 16进制）
     {//printf("0x%X\n", System::Get_Hold_VKKey());
-        for (int i = 0x01; i < 0xFE; ++i)if (GetAsyncKeyState(i) & 0x8000)return i;//vk键码遍历 返回按下的键的vk码
+        for (int i = 0x01; i < 0xFE; ++i)if (GetAsyncKeyState(i) & 0x8000)return i; return 0;//vk键码遍历 返回按下的键的vk码
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------

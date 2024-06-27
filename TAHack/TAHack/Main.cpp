@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 114;
-const string ReleaseDate = "[2024-06-26 18:15]";
+const int ReleaseVersion = 116;
+const string ReleaseDate = "[2024-06-27 17:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -77,7 +77,7 @@ void Thread_Menu() noexcept
 	while (1)
 	{
 		static int UI_Panel = 0; static vector<int> WindowSize = { 0 ,0 }; if (!MenuShowState)WindowSize = { 0 ,0 };
-		GUI_BL_.Window_SetSize({ (int)Variable::Animation<class GTAMEnu_Animation_1>(WindowSize[0], 3),(int)Variable::Animation<class GTAMEnu_Animation_2>(WindowSize[1], 3) });//Animation
+		GUI_BL_.Window_SetSize({ (int)Variable::Animation<class GTAMEnu_Animation_1>(WindowSize[0], 3),(int)Variable::Animation<class GTAMEnu_Animation_2>(WindowSize[1], 3) });//窗口大小动画
 		if (!GUI_BL_.Window_Move() && MenuShowState)
 		{
 			if (UI_Settings_CustomMenuColor)GUI_BL_.GUI_BackGround(4);
@@ -134,16 +134,17 @@ void Thread_Menu() noexcept
 			}
 			else if (UI_Panel == 1)//Setting
 			{
-				const auto Block_About = GUI_BL_.GUI_Block(150, 30, 160, "About");
+				const auto Block_About = GUI_BL_.GUI_Block(150, 30, 190, "About");
 				GUI_BL_.GUI_Text(Block_About, 1, "TAHack", GUI_BL_.Global_Get_EasyGUI_Color());
 				GUI_BL_.GUI_Text(Block_About, 1, "            for GTA5 (External)", { 150,150,150 });
 				GUI_BL_.GUI_Text(Block_About, 2, "Release date: " + ReleaseDate + " (" + to_string(ReleaseVersion) + ")", { 150,150,150 });
-				GUI_BL_.GUI_Text(Block_About, 3, "Online version: 1.69", { 150,150,150 });
-				GUI_BL_.GUI_Text(Block_About, 4, "Author: https://github.com/Coslly", { 150,150,150 });
+				GUI_BL_.GUI_Text(Block_About, 3, "Cloud offsets date: " + Offsets_Date, { 150,150,150 });
+				GUI_BL_.GUI_Text(Block_About, 4, "Online version: " + SupportGameVersion, { 150,150,150 });
+				GUI_BL_.GUI_Text(Block_About, 5, "Author: https://github.com/Coslly", { 150,150,150 });
 				BOOL Button_AuthorLink = false;
-				GUI_BL_.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 4, Button_AuthorLink);
+				GUI_BL_.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 5, Button_AuthorLink);
 				if (Button_AuthorLink)System::Open_Website("https://github.com/Coslly");
-				const auto Block_Menu = GUI_BL_.GUI_Block(150, 210, 340, "Menu");
+				const auto Block_Menu = GUI_BL_.GUI_Block(150, 240, 340, "Menu");
 				GUI_BL_.GUI_Text(Block_Menu, 1, "Menu key");
 				GUI_BL_.GUI_KeySelector<class GTA_Menu_15>(Block_Menu, 1, UI_Settings_MenuKey);
 				GUI_BL_.GUI_Checkbox(Block_Menu, 2, "Menu color", UI_Settings_CustomMenuColor);
@@ -161,7 +162,7 @@ void Thread_Menu() noexcept
 				if (Module_GTA5)GUI_BL_.GUI_Tips({ Block_Menu.x + 10,Block_Menu.y }, 7, "GTA5.exe -> " + to_string(Module_GTA5));
 				else GUI_BL_.GUI_Tips({ Block_Menu.x + 10,Block_Menu.y }, 7, "GTA5 not found!!!", 0, { 200,100,100 });
 				GUI_BL_.GUI_Tips({ Block_Menu.x + 10,Block_Menu.y }, 8, "If it doesn't work you can download the latest version in the Release folder.");
-				WindowSize = { 580 ,580 };
+				WindowSize = { 580 ,610 };
 			}
 			else if (UI_Panel == 2)//Legit
 			{
@@ -186,9 +187,9 @@ void Thread_Menu() noexcept
 				WindowSize = { 580 ,440 };
 			}
 			GUI_BL_.Draw_GUI();
-			if (true)//Button State
+			if (true)//按钮状态
 			{
-				if (UI_Settings_SaveConfig)//Save Config
+				if (UI_Settings_SaveConfig)//保存参数
 				{
 					System::Create_File("TAHack.cfg",
 						to_string(UI_Menu_Health) + "\n" +
@@ -241,10 +242,10 @@ void Thread_Menu() noexcept
 						to_string(UI_Menu_BulletType_Key) + "\n"
 					);
 				}
-				if (UI_Settings_StartGTA)System::Open_Website("steam://rungameid/271590");//Start GTA5
-				if (UI_Settings_GitHubRepositories)System::Open_Website("https://github.com/Coslly/TaHack.git");//Open GitHubRepositories
-				if (UI_Settings_Restart)System::Self_Restart();//RestartSelf
-				if (UI_Settings_CloseMenu)exit(0);//Close
+				if (UI_Settings_StartGTA)System::Open_Website("steam://rungameid/271590");//启动 GTA5
+				if (UI_Settings_GitHubRepositories)System::Open_Website("https://github.com/Coslly/TaHack.git");//打开Github项目页面
+				if (UI_Settings_Restart)System::Self_Restart();//重启程序
+				if (UI_Settings_CloseMenu)exit(0);//关闭程序
 			}
 		}
 	}
@@ -331,16 +332,17 @@ void Thread_Misc() noexcept
 {
 	System::Log("Load Thread: Thread_Misc()");
 	Window::Windows RenderWindow_Var;
-	const HWND Render_Window_HWND_ = RenderWindow_Var.Create_RenderBlock_Alpha(GetSystemMetrics(SM_CXSCREEN), 30, "TAHack - Watermark");//Create RenderWindow
+	const HWND Render_Window_HWND_ = RenderWindow_Var.Create_RenderBlock_Alpha(GetSystemMetrics(SM_CXSCREEN), 30, "TAHack - Watermark");//创建绘制窗口
 	Window::Render Render_Var; Render_Var.CreatePaint(Render_Window_HWND_, 0, 0, GetSystemMetrics(SM_CXSCREEN), 30);
+	Reload(true);//初始化刷新内存变量
 	while (1)
 	{
-		Reload();//Update Offsets Value
-		if (System::Sleep_Tick<class Funtion_AntiAFK_>(5000) && !UI_Legit_Enabled && UI_Menu_AntiAFK && Window::Get_WindowEnable(GTA_mem.Get_ProcessHWND())) { System::Mouse_Move(1, 0); Sleep(1); System::Mouse_Move(-1, 0); Sleep(1); }//Anti AFK Kick
+		Reload();//刷新内存变量
+		if (System::Sleep_Tick<class Funtion_AntiAFK_>(5000) && !UI_Legit_Enabled && UI_Menu_AntiAFK && Window::Get_WindowEnable(GTA_mem.Get_ProcessHWND())) { System::Mouse_Move(1, 0); Sleep(1); System::Mouse_Move(-1, 0); Sleep(1); }//防止挂机踢出
 		if (UI_Settings_WaterMark)
 		{
 			RenderWindow_Var.Set_WindowPos(0, 0);
-			if (System::Sleep_Tick<class Render_Window_Sleep_Class_>(200))//Sleep no in thread.
+			if (System::Sleep_Tick<class Render_Window_Sleep_Class_>(200))
 			{
 				const auto Menu_Color = GUI_IO_.GUIColor;
 				const string WaterMark_String = "TAHack | " + System::Time_String();
@@ -356,9 +358,9 @@ void Thread_Misc() noexcept
 			}
 		}
 		else RenderWindow_Var.Set_WindowPos(9999, 9999);
-		if (UI_Settings_ShowConsoleWindow)ShowWindow(GetConsoleWindow(), true);//ShowConsoleWindow
-		else ShowWindow(GetConsoleWindow(), false);//HideConsoleWindow
-		if (UI_Settings_LockGameWindow && !MenuShowState)SetForegroundWindow(GTA_HWND);//Lock GTA5 Window
+		if (UI_Settings_ShowConsoleWindow)ShowWindow(GetConsoleWindow(), true);//显示控制台窗口
+		else ShowWindow(GetConsoleWindow(), false);//隐藏控制台窗口
+		if (UI_Settings_LockGameWindow && !MenuShowState)SetForegroundWindow(GTA_HWND);//锁定GTA5窗口
 		GUI_IO_ = GUI_BL_.Get_IO();
 		if (!UI_Settings_CustomMenuColor)GUI_IO_.GUIColor = { GUI_IO_.GUIColor_Rainbow[3],GUI_IO_.GUIColor_Rainbow[4],GUI_IO_.GUIColor_Rainbow[5] };
 		Sleep(5);//CPU
@@ -366,34 +368,34 @@ void Thread_Misc() noexcept
 }
 int main() noexcept
 {
-	system("cls");//Clear text
+	system("cls");
 	System::Log("Load Thread: main()");
-	System::Anti_click();//Console not selected.
+	System::Anti_click();
 	Window::Hide_ConsoleWindow();
-	System::URL_READ AutoUpdate = { "cache_update" };//Auto Update Service
-	if (AutoUpdate.StoreMem("https://github.com/Coslly/TaHack/blob/main/TAHack/TAHack/Main.cpp?raw=true"))
+	System::URL_READ AutoUpdate = { "cache_update" };//自动更新系统
+	if (AutoUpdate.StoreMem("https://github.com/Coslly/TaHack/blob/main/TAHack/TAHack/Main.cpp?raw=true"))//版本号更新检查
 	{
-		string Version = AutoUpdate.Read(3); if (Version != "") { Version.erase(0, 27); Version.erase(Version.size() - 1, 1); }//Erase suffix and variablename
+		string Version = AutoUpdate.Read(3); if (Version != "") { Version.erase(0, 27); Version.erase(Version.size() - 1, 1); }
 		AutoUpdate.Release();
 		if (Variable::string_int_(Version) > ReleaseVersion && Window::Message_Box("TAHack Update", "A new version has been released.\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
 		{
 			System::Open_Website("https://github.com/Coslly/TaHack/releases/download/Release/TAHack.exe"); Beep(100, 30); exit(0);
 		}
 	}
-	if (FindWindow(NULL, L"TAHack ")) { MessageBox(NULL, L"Already running.", L"TAHack - Error", MB_ICONERROR); exit(0); }//Prevent multiple openings
-	if (!System::Judge_File("TAHack.cfg")) { System::Create_File("TAHack.cfg", Default_Config); System::Self_Restart(); }//Create Default Config
+	if (FindWindow(NULL, L"TAHack ")) { MessageBox(NULL, L"Already running.", L"TAHack - Error", MB_ICONERROR); exit(0); }//防止多开程序
+	if (!System::Judge_File("TAHack.cfg")) { System::Create_File("TAHack.cfg", Default_Config); System::Self_Restart(); }//创建默认参数文件
 	thread Thread_Menu1 = thread(Thread_Menu);
 	thread Thread_Misc1 = thread(Thread_Misc);
 	thread Thread_Memory1 = thread(Thread_Memory);
 	while (1)
 	{
-		if (System::Get_Key(VK_INSERT) && System::Get_Key(VK_DELETE)) { Beep(100, 30); exit(0); }//Close Key
-		static short MenuWindowAlpha = 0;//Animation Alpha
+		if (System::Get_Key(VK_INSERT) && System::Get_Key(VK_DELETE)) { Beep(100, 30); exit(0); }//关闭程序快捷键
+		static short MenuWindowAlpha = 0;//窗口透明度动画
 		if (MenuShowState)MenuWindowAlpha = MenuWindowAlpha + UI_Settings_MenuColor_A / 8;
 		else MenuWindowAlpha = MenuWindowAlpha - UI_Settings_MenuColor_A / 8;
 		if (MenuWindowAlpha >= UI_Settings_MenuColor_A)MenuWindowAlpha = UI_Settings_MenuColor_A;
 		else if (MenuWindowAlpha <= 0)MenuWindowAlpha = 0;
-		GUI_BL_.Window_SetAlpha(MenuWindowAlpha);//SetWindow AlphaColor
+		GUI_BL_.Window_SetAlpha(MenuWindowAlpha);
 		if (UI_Settings_CustomMenuColor)GUI_BL_.Global_Set_EasyGUI_Color(UI_Settings_MenuColor);
 		if (!System::Key_Toggle<class Class_GTAMENU_KeyHold_>(UI_Settings_MenuKey)) { GUI_BL_.Window_Show(); MenuShowState = true; }
 		else { if (MenuWindowAlpha == 0)GUI_BL_.Window_Hide(); MenuShowState = false; }
