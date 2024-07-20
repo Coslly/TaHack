@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 116;
-const string ReleaseDate = "[2024-06-27 17:30]";
+const int ReleaseVersion = 120;
+const string ReleaseDate = "[2024-07-20 20:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -74,10 +74,10 @@ void Thread_Menu() noexcept
 {
 	System::Log("Load Thread: Thread_Menu()");
 	GUI_BL_.Window_Create(1440, 610, "TAHack ", true);
-	while (1)
+	while (true)
 	{
-		static int UI_Panel = 0; static vector<int> WindowSize = { 0 ,0 }; if (!MenuShowState)WindowSize = { 0 ,0 };
-		GUI_BL_.Window_SetSize({ (int)Variable::Animation<class GTAMEnu_Animation_1>(WindowSize[0], 3),(int)Variable::Animation<class GTAMEnu_Animation_2>(WindowSize[1], 3) });//窗口大小动画
+		static int UI_Panel = 0; static Variable::Vector2 WindowSize = { 0 ,0 }; if (!MenuShowState)WindowSize = { 0 ,0 };
+		GUI_BL_.Window_SetSize(Variable::Animation_Vec2<class CLASS_GTAMENU_ANIMATION_>(WindowSize, 3));//窗口大小动画
 		if (!GUI_BL_.Window_Move() && MenuShowState)
 		{
 			if (UI_Settings_CustomMenuColor)GUI_BL_.GUI_BackGround(4);
@@ -253,7 +253,7 @@ void Thread_Menu() noexcept
 void Thread_Memory() noexcept
 {
 	System::Log("Load Thread: Thread_Memory()");
-	while (1)
+	while (true)
 	{
 		if (Module_GTA5)//游戏运行时时运行
 		{
@@ -335,7 +335,7 @@ void Thread_Misc() noexcept
 	const HWND Render_Window_HWND_ = RenderWindow_Var.Create_RenderBlock_Alpha(GetSystemMetrics(SM_CXSCREEN), 30, "TAHack - Watermark");//创建绘制窗口
 	Window::Render Render_Var; Render_Var.CreatePaint(Render_Window_HWND_, 0, 0, GetSystemMetrics(SM_CXSCREEN), 30);
 	Reload(true);//初始化刷新内存变量
-	while (1)
+	while (true)
 	{
 		Reload();//刷新内存变量
 		if (System::Sleep_Tick<class Funtion_AntiAFK_>(5000) && !UI_Legit_Enabled && UI_Menu_AntiAFK && Window::Get_WindowEnable(GTA_mem.Get_ProcessHWND())) { System::Mouse_Move(1, 0); Sleep(1); System::Mouse_Move(-1, 0); Sleep(1); }//防止挂机踢出
@@ -375,19 +375,19 @@ int main() noexcept
 	System::URL_READ AutoUpdate = { "cache_update" };//自动更新系统
 	if (AutoUpdate.StoreMem("https://github.com/Coslly/TaHack/blob/main/TAHack/TAHack/Main.cpp?raw=true"))//版本号更新检查
 	{
-		string Version = AutoUpdate.Read(3); if (Version != "") { Version.erase(0, 27); Version.erase(Version.size() - 1, 1); }
+		auto Version = AutoUpdate.Read(3); if (Version != "") { Version.erase(0, 27); Version.erase(Version.size() - 1, 1); }
 		AutoUpdate.Release();
 		if (Variable::string_int_(Version) > ReleaseVersion && Window::Message_Box("TAHack Update", "A new version has been released.\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
 		{
 			System::Open_Website("https://github.com/Coslly/TaHack/releases/download/Release/TAHack.exe"); Beep(100, 30); exit(0);
 		}
 	}
-	if (FindWindow(NULL, L"TAHack ")) { MessageBox(NULL, L"Already running.", L"TAHack - Error", MB_ICONERROR); exit(0); }//防止多开程序
+	if (FindWindow(0, L"TAHack ")) { MessageBox(0, L"Already running.", L"TAHack - Error", MB_ICONERROR); exit(0); }//防止多开程序
 	if (!System::Judge_File("TAHack.cfg")) { System::Create_File("TAHack.cfg", Default_Config); System::Self_Restart(); }//创建默认参数文件
 	thread Thread_Menu1 = thread(Thread_Menu);
 	thread Thread_Misc1 = thread(Thread_Misc);
 	thread Thread_Memory1 = thread(Thread_Memory);
-	while (1)
+	while (true)
 	{
 		if (System::Get_Key(VK_INSERT) && System::Get_Key(VK_DELETE)) { Beep(100, 30); exit(0); }//关闭程序快捷键
 		static short MenuWindowAlpha = 0;//窗口透明度动画

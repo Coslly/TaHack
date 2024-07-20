@@ -1,4 +1,4 @@
-﻿//2024-06-26 23:20
+﻿//2024-07-18 18:50
 #pragma once
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -54,7 +54,7 @@ namespace Variable//变量转换
 {
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
-    constexpr float PI() noexcept//圆周率
+    constexpr float PI() noexcept//圆周率 π
     {//Variable::PI();
         return 3.14159265358;
     }
@@ -245,14 +245,14 @@ namespace Variable//变量转换
         float radian = ((角度) * 3.1415926535) / 180;
         return { 距离 * sin(radian),距离 * cos(radian) };
     }
-    //-----------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------
     vector<float> Ang_Pos_(int X, int Y, int Dis, float Ang, float Ang_ = 0) noexcept//角度距离转坐标
     {//Variable::Ang_Pos_(0, 0, 10, 10, 10);
         const float radian = ((Ang + Ang_) * 3.1415926535) / 180;
         vector<float> ReturnValue = { X + Dis * sin(radian),Y + Dis * cos(radian) };
         return ReturnValue;
     }
-    //-----------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------
     Vector3 Ang_Pos_Vec(Vector3 OG_Pos, int Dis, float Ang, float Ang_ = 0) noexcept//角度距离转坐标
     {//Variable::Ang_Pos_Vec({ 100,100,100 }, 10, 10, 10);
         const float radian = ((Ang + Ang_) * 3.1415926535) / 180;
@@ -324,6 +324,7 @@ namespace Variable//变量转换
         string STR = Str; transform(STR.begin(), STR.end(), STR.begin(), toupper);
         return STR;
     }
+    //-------------------------------------------------------
     string String_Lower(string Str) noexcept//英文字符串转小写
     {//Variable::String_Lower("Abc"); return "abc"
         string STR = Str; transform(STR.begin(), STR.end(), STR.begin(), tolower);
@@ -372,12 +373,6 @@ namespace Window//窗口
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
-    Variable::Vector2 Get_Resolution() noexcept//获取屏幕分辨率（像素）
-    {//Window::Get_Resolution().x;
-        return { GetSystemMetrics(SM_CXSCREEN) ,GetSystemMetrics(SM_CYSCREEN) };//[0]==X [1]==Y
-    }
-    //-----------------------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------------------------------------------------------
     template<class A>//防止同窗口冲突  不同的窗口改不同的类
     HDC GetDC(HWND Window_HWND, BOOL Change = false) noexcept//无内存泄漏的窗口HDC获取
     {//Window::GetDC(NULL);
@@ -387,6 +382,11 @@ namespace Window//窗口
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
+    Variable::Vector2 Get_Resolution() noexcept//获取屏幕分辨率（像素）
+    {//Window::Get_Resolution().x;
+        return { GetSystemMetrics(SM_CXSCREEN) ,GetSystemMetrics(SM_CYSCREEN) };//[0]==X [1]==Y
+    }
+    //-------------------------------------------------------
     void Set_Resolution(int X, int Y) noexcept//模拟英伟达控制台更改像素 (只适用于系统已经创建的像素搭配!)
     {//Window::Set_Resolution(1440,1080);
         if (X != GetSystemMetrics(SM_CXSCREEN) || Y != GetSystemMetrics(SM_CYSCREEN))//设立条件防止放入循环崩溃
@@ -876,12 +876,7 @@ namespace Window//窗口
             //--------------------------------帧数计算
             static int m_fps = 0; m_fps++;
             const int Tick = GetTickCount64(); static int Tick_Old = Tick;
-            if (Tick >= Tick_Old + 1000)//每1秒刷新 (计时器)
-            {
-                Tick_Old = Tick;
-                Draw_FPS = m_fps;
-                m_fps = 0;
-            }
+            if (Tick >= Tick_Old + 1000) { Tick_Old = Tick; Draw_FPS = m_fps; m_fps = 0; }
             //--------------------------------消息循环
             if (MessageLoop)
             {
@@ -1219,6 +1214,7 @@ namespace Window//窗口
     private://初始化D2D
         ID2D1HwndRenderTarget* Render_Target;//绘制目标
         HWND Render_Window_HWND;//绘制窗口HWND
+        int Draw_FPS;//绘制帧数
         D2D1::ColorF D2DCol(Variable::Vector4 Color) noexcept { return D2D1::ColorF((float)Color.r / 255, (float)Color.g / 255, (float)Color.b / 255, (float)Color.a / 255); };
     public:
         //--------------------------------------------------------------------------------------------------------
@@ -1232,7 +1228,18 @@ namespace Window//窗口
             Render_Factory->Release();
         }
         HWND HWND() noexcept { return Render_Window_HWND; }//返回窗口HWND
-        void Draw(BOOL State = false) noexcept { if (State)Render_Target->EndDraw(); else Render_Target->BeginDraw(); }//绘制函数
+        int FPS() noexcept { return Draw_FPS; }//返回绘制帧数
+        void Draw(BOOL State = false) noexcept//绘制画板函数
+        {
+            if (State)//0:开始绘制 1:结束绘制
+            {
+                Render_Target->EndDraw();
+                static int m_fps = 0; m_fps++;
+                const int Tick = GetTickCount64(); static int Tick_Old = Tick;
+                if (Tick >= Tick_Old + 1000) { Tick_Old = Tick; Draw_FPS = m_fps; m_fps = 0; }
+            }
+            else Render_Target->BeginDraw();
+        }
         void Anti_Alias(BOOL Anti = true) noexcept//抗锯齿设置
         {
             if (Anti)//开启抗锯齿
@@ -1419,17 +1426,20 @@ namespace System//Windows系统
     //-----------------------------------------------------------------------------------------------------------------------------
     void Key_Click(int VK_CODE, BOOL Sleep_ = false, int SCAN_CODE = 0) noexcept//按下弹起键盘上的某个键位 VK_CODE: https://docs.microsoft.com/zh-cn/windows/win32/inputdev/virtual-key-codes
     {//System::Key_Click(VK_RETURN);
-        if (Sleep_)//添加睡眠函数程序更容易接收
-        {//https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
-            keybd_event(VK_CODE, SCAN_CODE, 0, 0);
-            Sleep(1);
-            keybd_event(VK_CODE, SCAN_CODE, KEYEVENTF_KEYUP, 0);
-            Sleep(1);
-        }
-        else {
-            keybd_event(VK_CODE, SCAN_CODE, 0, 0);
-            keybd_event(VK_CODE, SCAN_CODE, KEYEVENTF_KEYUP, 0);
-        }
+        //https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
+        keybd_event(VK_CODE, SCAN_CODE, 0, 0);
+        if (Sleep_)Sleep(1);
+        keybd_event(VK_CODE, SCAN_CODE, KEYEVENTF_KEYUP, 0);
+        if (Sleep_)Sleep(1);
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------
+    void Key_Click_HWND(HWND Window_HWND, int VK_CODE, BOOL Sleep_ = false) noexcept//向指定窗口按下弹起键盘上的某个键位
+    {//System::Key_Click_HWND(0, VK_RETURN);
+        SendMessage(Window_HWND, WM_KEYDOWN, VK_CODE, 0);
+        if (Sleep_)Sleep(1);
+        SendMessage(Window_HWND, WM_KEYUP, VK_CODE, 0);
+        if (Sleep_)Sleep(1);
     }
     //-----------------------------------------------------------------------------------------------------------------------------
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -1456,6 +1466,11 @@ namespace System//Windows系统
     {//System::Key_Con(VK_SPACE);//release space key
         if (WAY)keybd_event(VK_CODE, SCAN_CODE, 0, 0);
         else keybd_event(VK_CODE, SCAN_CODE, KEYEVENTF_KEYUP, 0);
+    }
+    void Key_Con_HWND(HWND Window_HWND, int VK_CODE, BOOL WAY = false) noexcept//向指定窗口按下或松开按键
+    {//System::Key_Con_HWND(0, VK_SPACE);//release space key
+        if (WAY)SendMessage(Window_HWND, WM_KEYDOWN, VK_CODE, 0);
+        else SendMessage(Window_HWND, WM_KEYUP, VK_CODE, 0);
     }
     void Mouse_Con(int VK_CODE, BOOL WAY = false) noexcept//按下或松开鼠标按键 (不需要扫描码)
     {//System::Mouse_Con(0x1);//release mouseleft key
@@ -2999,7 +3014,6 @@ namespace EasyGUI
                 SetClipboardData(1, hHandle);//设置剪切板数据
                 GlobalUnlock(hHandle);//解除锁定
                 CloseClipboard();//关闭剪切板
-                Beep(100, 20);//复制成功提醒
             }
             for (short Color_Bl = 0; Color_Bl <= 2; ++Color_Bl)
             {
@@ -3040,7 +3054,6 @@ namespace EasyGUI
                 SetClipboardData(1, hHandle);//设置剪切板数据
                 GlobalUnlock(hHandle);//解除锁定
                 CloseClipboard();//关闭剪切板
-                Beep(100, 20);//复制成功提醒
             }
             for (short Color_Bl = 0; Color_Bl <= 3; ++Color_Bl)
             {
@@ -3135,7 +3148,7 @@ namespace EasyGUI
         template<class CreateClassName>
         string GUI_InputText(Vector2 BlockPos, short LineRow, string& m_String, string NormalText = "") noexcept//字符串输入框 (英文数字 不支持UTF-8 最多30个字符)
         {
-            if (BlockPos.x == 0 && BlockPos.y == 0)return false;//当无block则不进行绘制
+            if (BlockPos.x == 0 && BlockPos.y == 0)return "";//当无block则不进行绘制
             const BOOL DetectMousePos = In_MouseEventJudgment(BlockPos.x + 55, BlockPos.y + 30 * LineRow - 9, 230, 25);//窗口检测机制
             static BOOL IsInput = false;//判断是否在输入变量
             string DrawString = m_String;//绘制字符串
@@ -3156,7 +3169,6 @@ namespace EasyGUI
                             SetClipboardData(1, hHandle);//设置剪切板数据
                             GlobalUnlock(hHandle);//解除锁定
                             CloseClipboard();//关闭剪切板
-                            Beep(100, 20);//复制成功提醒
                         }
                         if (In_KeyEvent(0x56, true))//Ctrl + V 粘贴
                         {
@@ -3168,7 +3180,6 @@ namespace EasyGUI
                                 GlobalUnlock(h);//解除锁定
                             }
                             CloseClipboard();//关闭剪贴板
-                            Beep(100, 20);//粘贴成功提醒
                         }
                     }
                     for (int i = 0x8; i < 0xFE; ++i)//VK键码遍历 (检测按下了什么键)
