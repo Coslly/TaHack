@@ -1,7 +1,7 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 120;
-const string ReleaseDate = "[2024-07-20 20:30]";
+const int ReleaseVersion = 122;
+const string ReleaseDate = "[2024-07-31 20:30]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
@@ -128,7 +128,7 @@ void Thread_Menu() noexcept
 				GUI_BL_.GUI_Button_Small(Block_SpawnVehicle, 1, UI_Menu_SpawnVehicle_Button);
 				GUI_BL_.GUI_KeySelector<class GTA_Menu_13>(Block_SpawnVehicle, 1, UI_Menu_SpawnVehicle_Key);
 				GUI_BL_.GUI_InputText<class GTA_Menu_14>(Block_SpawnVehicle, 2, UI_Menu_SpawnVehicle_String, "Custom vehicle ID");
-				GUI_BL_.GUI_List(Block_SpawnVehicle, 3, { "Oppressor Mk2","P-996 LAZER","F-160 RAIJU","Vigilante","Deveste Eight","TM-02 KHANJALI","Kuruma","Savage" }, UI_Menu_SpawnVehicle_List, 17);
+				GUI_BL_.GUI_List(Block_SpawnVehicle, 3, { "Oppressor Mk2","P-996 LAZER","F-160 RAIJU","Vigilante","Deveste Eight","TM-02 KHANJALI","Kuruma","Savage","Seashark","Buzzard","X80 Proto","Krieger" }, UI_Menu_SpawnVehicle_List, 17);
 				GUI_BL_.GUI_Tips({ Block_Weapon.x + 10,Block_Weapon.y }, 3, "Self research. XD");
 				WindowSize = { 1440 ,610 };
 			}
@@ -301,6 +301,10 @@ void Thread_Memory() noexcept
 					else if (UI_Menu_SpawnVehicle_List == 5)SpawnVehicle("khanjali");
 					else if (UI_Menu_SpawnVehicle_List == 6)SpawnVehicle("kuruma2");
 					else if (UI_Menu_SpawnVehicle_List == 7)SpawnVehicle("savage");
+					else if (UI_Menu_SpawnVehicle_List == 8)SpawnVehicle("seashark");
+					else if (UI_Menu_SpawnVehicle_List == 9)SpawnVehicle("buzzard");
+					else if (UI_Menu_SpawnVehicle_List == 10)SpawnVehicle("prototipo");
+					else if (UI_Menu_SpawnVehicle_List == 11)SpawnVehicle("krieger");
 					Beep(100, 30);
 				}
 			}

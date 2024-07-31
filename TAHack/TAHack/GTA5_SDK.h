@@ -164,6 +164,7 @@ namespace GTA5_SDK//GTA5作弊开发助手
 		}
 		void SpawnVehicle(string VehicleName = "oppressor2") noexcept//刷出线上载具
 		{
+			const auto Rainbow_Color = System::RainbowColor(50);//要刷出的载具主题色
 			auto SpawnPos = GTA_mem.Read_Level<Variable::Vector3>(LocalPlayer, { pVisual });
 			SpawnPos.x += GTA_mem.Read_Level<float>(LocalPlayer, { pCNavigation,oForward }) * 5;
 			SpawnPos.y += GTA_mem.Read_Level<float>(LocalPlayer, { pCNavigation,oRight }) * 5;
@@ -177,26 +178,26 @@ namespace GTA5_SDK//GTA5作弊开发助手
 			Set_GlobalValue(oVMCreate + 2, 1);//开始生成载具2
 			Set_GlobalValue(oVMCreate + 27 + 1, to_string(25688831)[8]);//车牌
 			//载具配置 值设置-1代表载具默认配置
-			Set_GlobalValue(oVMCreate + 27 + 5, -1);//主色调
-			Set_GlobalValue(oVMCreate + 27 + 6, -1);//副色调
+			Set_GlobalValue(oVMCreate + 27 + 5, System::Rand_Number(0, 159, System::Tick()));//主色调
+			Set_GlobalValue(oVMCreate + 27 + 6, System::Rand_Number(0, 159, System::Tick()));//副色调
 			Set_GlobalValue(oVMCreate + 27 + 7, -1);//珠光色
 			for (short i = 0; i < 49; i++)Set_GlobalValue(oVMCreate + 27 + 10 + i, -1);
-			Set_GlobalValue(oVMCreate + 27 + 8, -1);//车轮颜色 
+			Set_GlobalValue(oVMCreate + 27 + 8, System::Rand_Number(0, 159, System::Tick()));//车轮颜色
 			Set_GlobalValue(oVMCreate + 27 + 69, -1);//车轮类型
 			Set_GlobalValue(oVMCreate + 27 + 33, -1);//车轮选择
-			Set_GlobalValue(oVMCreate + 27 + 24, -1);// 喇叭
+			Set_GlobalValue(oVMCreate + 27 + 24, 45);//喇叭
 			Set_GlobalValue(oVMCreate + 27 + 27, 1);//涡轮增压
 			Set_GlobalValue(oVMCreate + 27 + 28, 1);
-			Set_GlobalValue(oVMCreate + 27 + 30, -1);//烧胎烟雾
-			Set_GlobalValue(oVMCreate + 27 + 32, -1);//氙气车灯 (0-14)
 			Set_GlobalValue(oVMCreate + 27 + 60, 1);//起落架/载具状态
-			Set_GlobalValue(oVMCreate + 27 + 62, 200);// 烧胎烟雾颜色 R  
-			Set_GlobalValue(oVMCreate + 27 + 63, 200);// G
-			Set_GlobalValue(oVMCreate + 27 + 64, 255);// B
-			Set_GlobalValue(oVMCreate + 27 + 65, -1);// 窗户  Window tint 0-6  
-			Set_GlobalValue(oVMCreate + 27 + 74, 200);//霓虹灯颜色 R
-			Set_GlobalValue(oVMCreate + 27 + 75, 200);//G
-			Set_GlobalValue(oVMCreate + 27 + 76, 255);//B
+			Set_GlobalValue(oVMCreate + 27 + 30, 1);//烧胎烟雾
+			Set_GlobalValue(oVMCreate + 27 + 62, Rainbow_Color.r);//烧胎烟雾颜色 R
+			Set_GlobalValue(oVMCreate + 27 + 63, Rainbow_Color.g);// G
+			Set_GlobalValue(oVMCreate + 27 + 64, Rainbow_Color.b);// B
+			Set_GlobalValue(oVMCreate + 27 + 65, 6);//窗户透明度 WindowTint 0-6
+			Set_GlobalValue(oVMCreate + 27 + 32, System::Rand_Number(0, 14, System::Tick()));//氙气车灯 0-14
+			Set_GlobalValue(oVMCreate + 27 + 74, Rainbow_Color.r);//霓虹灯颜色 R
+			Set_GlobalValue(oVMCreate + 27 + 75, Rainbow_Color.g);//G
+			Set_GlobalValue(oVMCreate + 27 + 76, Rainbow_Color.b);//B
 			//载具配置
 			Set_GlobalValue(oVMCreate + 27 + 77, 0xF0400200);//载具状态
 			Set_GlobalValue(oVMCreate + 27 + 95, 14);//拥有载具标志
