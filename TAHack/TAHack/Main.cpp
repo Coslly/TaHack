@@ -1,22 +1,22 @@
 ﻿#include "Head.h"
 #include "GTA5_SDK.h"
-const int ReleaseVersion = 122;
-const string ReleaseDate = "[2024-07-31 20:30]";
+const int ReleaseVersion = 124;
+const string ReleaseDate = "[2024-08-06 12:10]";
 EasyGUI::EasyGUI GUI_BL_;
 EasyGUI::EasyGUI_IO GUI_IO_;
 BOOL MenuShowState;
 //--------------------------------------------------------------------
 namespace TAHack_Config_Var
 {
-	const string Default_Config = "1\n300\n1\n300\n0\n0\n0\n1.5\n0\n0\n1\n1\n1\n116\n1\n1\n25\n0\n11\n0\n45\n255\n230\n255\n250\n6\n1\n5\n1\n18\n0\n0\n1\n1\n25\n1\n5\n0\n1\n0\n1\n116\n1\n0\n0\n1\n117\n5\n";
+	const string Default_Config = "1\n300\n1\n300\n0\n0\n1\n1.2\n0\n0\n1\n1\n1\n116\n1\n1\n25\n0\n11\n0\n45\n255\n230\n255\n250\n6\n1\n5\n1\n18\n0\n0\n1\n1\n25\n1\n5\n0\n1\n0\n1\n116\n1\n0\n0\n1\n117\n5\n";
 	BOOL UI_Menu_Health = Variable::string_int_(System::Get_File("TAHack.cfg", 1));
 	int UI_Menu_Health_Value = Variable::string_int_(System::Get_File("TAHack.cfg", 2));
 	BOOL UI_Menu_Armor = Variable::string_int_(System::Get_File("TAHack.cfg", 3));
 	int UI_Menu_Armor_Value = Variable::string_int_(System::Get_File("TAHack.cfg", 4));
 	BOOL UI_Menu_WantedLevel = Variable::string_int_(System::Get_File("TAHack.cfg", 5));
 	int UI_Menu_WantedLevel_Value = Variable::string_int_(System::Get_File("TAHack.cfg", 6));
-	BOOL UI_Menu_SpeedChanger = Variable::string_int_(System::Get_File("TAHack.cfg", 7));
-	float UI_Menu_SpeedChanger_Value = Variable::string_float_(System::Get_File("TAHack.cfg", 8));
+	BOOL UI_Menu_MoveSpeed = Variable::string_int_(System::Get_File("TAHack.cfg", 7));
+	float UI_Menu_MoveSpeed_Value = Variable::string_float_(System::Get_File("TAHack.cfg", 8));
 	BOOL UI_Menu_God = Variable::string_int_(System::Get_File("TAHack.cfg", 9));
 	BOOL UI_Menu_NoRagdoll = Variable::string_int_(System::Get_File("TAHack.cfg", 10));
 	BOOL UI_Menu_DisableCollision = Variable::string_int_(System::Get_File("TAHack.cfg", 11));
@@ -92,8 +92,8 @@ void Thread_Menu() noexcept
 				GUI_BL_.GUI_Slider<int, class GTA_Menu_2>(Block_Attributes, 4, "Value", 0, 1000, UI_Menu_Armor_Value);
 				GUI_BL_.GUI_Checkbox(Block_Attributes, 5, "Wanted level", UI_Menu_WantedLevel);
 				GUI_BL_.GUI_Slider<int, class GTA_Menu_3>(Block_Attributes, 6, "Value", 0, 6, UI_Menu_WantedLevel_Value);
-				GUI_BL_.GUI_Checkbox(Block_Attributes, 7, "Move speed", UI_Menu_SpeedChanger);
-				GUI_BL_.GUI_Slider<float, class GTA_Menu_4>(Block_Attributes, 8, "Value", 0, 10, UI_Menu_SpeedChanger_Value);
+				GUI_BL_.GUI_Checkbox(Block_Attributes, 7, "Move speed", UI_Menu_MoveSpeed);
+				GUI_BL_.GUI_Slider<float, class GTA_Menu_4>(Block_Attributes, 8, "Value", 0, 20, UI_Menu_MoveSpeed_Value);
 				GUI_BL_.GUI_Button({ Block_Attributes.x,Block_Attributes.y + 5 }, 9, "Suicide", UI_Menu_Suicide, 90);
 				const auto Block_World = GUI_BL_.GUI_Block(150, 360, 220, "World");
 				GUI_BL_.GUI_Checkbox(Block_World, 1, "Snow", UI_Menu_Snow);
@@ -198,8 +198,8 @@ void Thread_Menu() noexcept
 						to_string(UI_Menu_Armor_Value) + "\n" +
 						to_string(UI_Menu_WantedLevel) + "\n" +
 						to_string(UI_Menu_WantedLevel_Value) + "\n" +
-						to_string(UI_Menu_SpeedChanger) + "\n" +
-						to_string(UI_Menu_SpeedChanger_Value) + "\n" +
+						to_string(UI_Menu_MoveSpeed) + "\n" +
+						to_string(UI_Menu_MoveSpeed_Value) + "\n" +
 						to_string(UI_Menu_God) + "\n" +
 						to_string(UI_Menu_NoRagdoll) + "\n" +
 						to_string(UI_Menu_DisableCollision) + "\n" +
@@ -263,7 +263,7 @@ void Thread_Memory() noexcept
 				if (UI_Menu_Armor)Armor(true, (float)UI_Menu_Armor_Value);//修改护甲值
 				if (UI_Menu_WantedLevel)Wanted(true, UI_Menu_WantedLevel_Value);//修改通缉星
 				if (UI_Menu_NeverWanted)Wanted(true, 0);//永远不被通缉
-				if (UI_Menu_SpeedChanger)MoveSpeed(true, UI_Menu_SpeedChanger_Value);//修改跑步速度
+				if (UI_Menu_MoveSpeed)MoveSpeed(true, UI_Menu_MoveSpeed_Value);//修改跑步速度
 				else MoveSpeed(true, 1);//默认速度
 				if (UI_Menu_God)God(true, 1);//无敌
 				else God(true, 0);

@@ -69,7 +69,7 @@ namespace GTA5_SDK//GTA5作弊开发助手
 			if (Set)
 			{
 				GTA_mem.Write_Level<float>(LocalPlayer, { pCPlayerInfo,oRunSpeed }, SetValue);//跑步
-				GTA_mem.Write_Level<float>(LocalPlayer, { pCPlayerInfo,oSwimSpeed }, SetValue);//游泳
+				GTA_mem.Write_Level<float>(LocalPlayer, { pCPlayerInfo,oSwimSpeed }, SetValue * 2);//游泳
 			}
 			return GTA_mem.Read_Level<float>(LocalPlayer, { pCPlayerInfo,oWanted });
 		}
