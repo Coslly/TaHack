@@ -6,7 +6,6 @@
 - Cloud Offset
 - GUI project: https://github.com/Coslly/EasyGUI-Lightweight.git
 - C++ Build in Release | x64
-- Not detected by anti-cheat
 ## 😩It doesn't work!!!
 You need to modify the offset at the top of the `Main.cpp` file content.
 
@@ -19,3 +18,5 @@ Subsequent updates will not modify the underlying code and header file code.
 ![image](https://github.com/Coslly/TaHack/blob/main/ShowImage3.png?raw=true)
 # 💀Disclaimer
 I am not responsible for anything that happens when you use this software.
+
+Please do not use TAHack after September 17, 2024 due to the GTA5 anti-cheat update!!!
